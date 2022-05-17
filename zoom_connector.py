@@ -294,6 +294,49 @@ class ZoomConnector(BaseConnector):
         else:
             return password
 
+    def _handle_create_meeting(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        user_id = param['user_id']
+        password = self._get_password(param.get('password'), param.get('gen_password'))
+        waiting_room = param.get('waiting_room')
+        topic = param.get('topic')
+        agenda = param.get('agenda')
+
+        data = {}
+
+        input_param_dict = {
+            'password': password,
+            'topic': topic,
+            'agenda': agenda,
+        }
+
+        for key in input_param_dict.keys():
+            if input_param_dict[key]:
+                data[key] = input_param_dict[key]
+
+        
+        if waiting_room != "None":
+            data['settings'] = {'waiting_room': (waiting_room == 'True')}
+        
+        ret_val, res = self._make_rest_call('/users/{}/meetings'.format(user_id), action_result, json=data, headers=None, method="post")
+        
+        action_result.add_data(res)
+
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
+
+        action_result.update_summary({
+            'meeting_id': str(res['id']),
+            'meeting_created': True,
+            'password': password,
+            'waiting_room': ('Not Added' if waiting_room == 'None' else waiting_room)
+        })
+
+        return action_result.set_status(phantom.APP_SUCCESS, 'Meeting {} successfully created'.format(str(res['id'])))
+
     def _handle_update_meeting(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
 
@@ -417,6 +460,9 @@ class ZoomConnector(BaseConnector):
 
         elif action_id == 'get_user':
             ret_val = self._handle_get_user(param)
+
+        elif action_id == 'create_meeting':
+            ret_val = self._handle_create_meeting(param)
 
         elif action_id == 'get_meeting':
             ret_val = self._handle_get_meeting(param)

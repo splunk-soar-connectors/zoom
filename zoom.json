@@ -15,7 +15,7 @@
     "utctime_updated": "2022-01-07T22:00:49.000000Z",
     "package_name": "phantom_zoom",
     "main_module": "zoom_connector.py",
-    "min_phantom_version": "4.10.0.40961",
+    "min_phantom_version": "5.2.0",
     "app_wizard_version": "1.0.0",
     "configuration": {
         "base_url": {
@@ -716,6 +716,55 @@
             "render": {
                 "type": "table"
             },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "create meeting",
+            "description": "Creates zoom meeting",
+            "type": "generic",
+            "identifier": "create_meeting",
+            "read_only": false,
+            "parameters": {
+                "user_id": {
+                    "description": "User id",
+                    "data_type": "string",
+                    "required": true,
+                    "order": 0
+                },
+                "password": {
+                    "description": "Meeting password",
+                    "data_type": "string",
+                    "order": 1
+                },
+                "gen_password": {
+                    "description": "Auto generate meeting password",
+                    "data_type": "boolean",
+                    "order": 2
+                },
+                "waiting_room": {
+                    "description": "Enable waiting room",
+                    "data_type": "string",
+                    "required": true,
+                    "value_list": [
+                        "None",
+                        "True",
+                        "False"
+                    ],
+                    "default": "None",
+                    "order": 3
+                },
+                "topic": {
+                    "description": "Topic of meeting",
+                    "data_type": "string",
+                    "order": 4
+                },
+                "agenda": {
+                    "description": "Agenda of meeting",
+                    "data_type": "string",
+                    "order": 5
+                }
+            },
+            "output": [],
             "versions": "EQ(*)"
         },
         {
