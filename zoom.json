@@ -9,14 +9,17 @@
     "product_name": "Zoom Meetings",
     "python_version": "3",
     "product_version_regex": ".*",
-    "publisher": "Splunk Community",
-    "license": "Copyright (c) 2021 Splunk Inc.",
-    "app_version": "1.0.2",
+    "publisher": "Splunk",
+    "license": "Copyright (c) 2022 Splunk Inc.",
+    "app_version": "2.0.0",
     "utctime_updated": "2022-01-07T22:00:49.000000Z",
     "package_name": "phantom_zoom",
     "main_module": "zoom_connector.py",
     "min_phantom_version": "5.2.0",
     "app_wizard_version": "1.0.0",
+    "latest_tested_versions": [
+        "Zoom Cloud 2022 on May 20, 2022"
+    ],
     "configuration": {
         "base_url": {
             "description": "Base URL (e.g. https://api.zoom.us/v2)",
