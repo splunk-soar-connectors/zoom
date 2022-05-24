@@ -236,7 +236,8 @@ class ZoomConnector(BaseConnector):
         req_password_inst = param.get('req_password_inst')
         req_password_pmi = param.get('req_password_pmi')
 
-        if not(pmi_password or waiting_room != 'None' or req_password_sched != 'None' or req_password_inst != 'None'):  # pragma: allowlist secret
+        if not(pmi_password or waiting_room != 'None'
+               or req_password_sched != 'None' or req_password_inst != 'None'):  # pragma: allowlist secret
             return action_result.set_status(phantom.APP_ERROR, 'No settings were selected for update')
 
         data = {}
@@ -246,11 +247,14 @@ class ZoomConnector(BaseConnector):
             if pmi_password:
                 data['schedule_meeting']['pmi_password'] = pmi_password
             if req_password_sched:
-                data['schedule_meeting']['require_password_for_scheduling_new_meetings'] = req_password_sched == 'True'  # pragma: allowlist secret
+                is_req_pass_true = req_password_sched == 'True'  # pragma: allowlist secret
+                data['schedule_meeting']['require_password_for_scheduling_new_meetings'] = is_req_pass_true
             if req_password_inst:
-                data['schedule_meeting']['require_password_for_instant_meetings'] = req_password_inst == 'True'  # pragma: allowlist secret
+                is_req_pass_inst_true = req_password_inst == 'True'  # pragma: allowlist secret
+                data['schedule_meeting']['require_password_for_instant_meetings'] = is_req_pass_inst_true
             if req_password_pmi:
-                data['schedule_meeting']['require_password_for_pmi_meetings'] = ('all' if req_password_pmi == 'True' else 'none')  # pragma: allowlist secret
+                req_pass_pmi = 'all' if req_password_pmi == 'True' else 'none'  # pragma: allowlist secret
+                data['schedule_meeting']['require_password_for_pmi_meetings'] = req_pass_pmi
         if waiting_room != 'None':
             data['in_meeting'] = {'waiting_room': waiting_room == 'True'}
 
@@ -262,9 +266,12 @@ class ZoomConnector(BaseConnector):
         action_result.update_summary({
             'pmi_password': ('Not Updated' if not(pmi_password) else pmi_password),
             'waiting_room': ('Not Updated' if waiting_room == 'None' else waiting_room),
-            'require_password_for_instant_meetings': ('Not Updated' if req_password_inst == 'None' else req_password_inst),  # pragma: allowlist secret
-            'require_password_for_scheduling_new_meetings': ('Not Updated' if req_password_sched == 'None' else req_password_sched),  # pragma: allowlist secret
-            'require_password_for_personal_meeting_instance': ('Not Updated' if req_password_pmi == 'None' else req_password_pmi)  # pragma: allowlist secret
+            'require_password_for_instant_meetings': ('Not Updated' if req_password_inst == 'None'  # pragma: allowlist secret
+                                                      else req_password_inst),
+            'require_password_for_scheduling_new_meetings': ('Not Updated' if req_password_sched == 'None'  # pragma: allowlist secret
+                                                             else req_password_sched),
+            'require_password_for_personal_meeting_instance': ('Not Updated' if req_password_pmi == 'None'  # pragma: allowlist secret
+                                                               else req_password_pmi)
         })
 
         return action_result.set_status(phantom.APP_SUCCESS, 'User {} successfully updated'.format(user_id))
@@ -384,7 +391,8 @@ class ZoomConnector(BaseConnector):
         parsed_fields = {}
 
         try:
-            for kv_pair in UnicodeDammit(response.get('invitation', '')).unicode_markup.replace('Join Zoom Meeting\r\n', 'invitation_link:').split('\r\n'):
+            for kv_pair in UnicodeDammit(response.get('invitation', '')).unicode_markup.replace('Join Zoom Meeting\r\n',
+                                                                                                'invitation_link:').split('\r\n'):
                 if kv_pair:
                     parts = kv_pair.split(':')
                     second_part = ':'.join(parts[1:]).strip()
