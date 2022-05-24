@@ -1028,9 +1028,50 @@
             },
             "output": [
                 {
+                    "data_path": "action_result.parameter.user_id",
+                    "data_type": "string",
+                    "contains": [
+                        "zoom user id"
+                    ],
+                    "example_values": [
+                        "A0BiCtoDEFGHIzYaZcLdsA"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.gen_password",
+                    "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.parameter.password",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.waiting_room",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.topic",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.agenda",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "Status",
+                    "column_order": 1,
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.id",
                     "data_type": "numeric",
-                    "example_value": 95612345678
+                    "example_value": 95612345678,
+                    "column_order": 0
                 },
                 {
                     "data_path": "action_result.data.*.type",
@@ -1278,6 +1319,46 @@
                     "data_path": "action_result.data.*.encrypted_password",
                     "data_type": "string",
                     "example_value": "YlJJJkxGVkMvWDgvdC9wbWVraABCZz09"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.meeting_created",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.password",
+                    "data_type": "string",
+                    "example_values": [
+                        "xFghbsuHndTYGF"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.waiting_room",
+                    "data_type": "string",
+                    "example_values": [
+                        "Not Updated"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 }
             ],
             "versions": "EQ(*)"
