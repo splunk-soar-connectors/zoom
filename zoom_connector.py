@@ -174,7 +174,9 @@ class ZoomConnector(BaseConnector):
         try:
             request_func = getattr(requests, method)
         except AttributeError:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, 'Invalid method: {0}'.format(method)), resp_json)
+            msg = 'Invalid method: {0}'.format(method)
+            self.error_print(msg)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
 
         # Create a URL to connect to
         url = '{}{}'.format(self._base_url, endpoint)
@@ -187,7 +189,9 @@ class ZoomConnector(BaseConnector):
                             **kwargs)
         except Exception as e:
             err_msg = self._get_error_message_from_exception(e)
-            return RetVal(action_result.set_status(phantom.APP_ERROR, 'Error connecting to server. {0}'.format(err_msg)), resp_json)
+            msg = 'Error connecting to server. {0}'.format(err_msg)
+            self.error_print(msg)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
 
         return self._process_response(r, action_result)
 
