@@ -380,7 +380,7 @@ class ZoomConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS, 'Meeting {} successfully updated'.format(meeting_id))
 
-    def _handle_get_meeting_invite(self, param):
+    def _handle_get_meeting_invitation(self, param):
         self.save_progress('In action handler for: {0}'.format(self.get_action_identifier()))
 
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -480,7 +480,7 @@ class ZoomConnector(BaseConnector):
             ret_val = self._handle_get_meeting(param)
 
         elif action_id == 'get_meeting_invitation':
-            ret_val = self._handle_get_meeting_invite(param)
+            ret_val = self._handle_get_meeting_invitation(param)
 
         elif action_id == 'update_meeting':
             ret_val = self._handle_update_meeting(param)
