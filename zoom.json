@@ -992,7 +992,10 @@
                     "description": "User id",
                     "data_type": "string",
                     "required": true,
-                    "order": 0
+                    "order": 0,
+                    "contains": [
+                        "zoom user id"
+                    ]
                 },
                 "password": {
                     "description": "Meeting password",
@@ -1362,6 +1365,9 @@
                     ]
                 }
             ],
+            "render": {
+                "type": "table"
+            },
             "versions": "EQ(*)"
         },
         {
