@@ -240,8 +240,10 @@ class ZoomConnector(BaseConnector):
         req_password_inst = param.get('req_password_inst')
         req_password_pmi = param.get('req_password_pmi')
 
-        if not(pmi_password or waiting_room != 'None'
-               or req_password_sched != 'None' or req_password_inst != 'None'):  # pragma: allowlist secret
+        is_waiting_room_updated = waiting_room != 'None'
+        is_req_password_sched_updated = req_password_sched != 'None'  # pragma: allowlist secret
+        is_req_password_inst = req_password_inst != 'None'  # pragma: allowlist secret
+        if not(pmi_password or is_waiting_room_updated or is_req_password_sched_updated or is_req_password_inst):
             return action_result.set_status(phantom.APP_ERROR, 'No settings were selected for update')
 
         data = {}
