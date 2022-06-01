@@ -184,7 +184,6 @@ class ZoomConnector(BaseConnector):
         try:
             r = request_func(
                             url,
-                            verify=config.get('verify_server_cert', False),
                             timeout=DEFAULT_TIMEOUT,
                             **kwargs)
         except Exception as e:

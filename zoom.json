@@ -29,22 +29,17 @@
             "default": "https://api.zoom.us/v2",
             "order": 0
         },
-        "verify_server_cert": {
-            "description": "Verify certificate",
-            "data_type": "boolean",
-            "order": 1
-        },
         "api_key": {
             "description": "API Key",
             "data_type": "password",
             "required": true,
-            "order": 2
+            "order": 1
         },
         "api_secret": {
             "description": "API Secret",
             "data_type": "password",
             "required": true,
-            "order": 3
+            "order": 2
         }
     },
     "pip_dependencies": {
