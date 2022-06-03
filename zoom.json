@@ -991,7 +991,8 @@
                     "order": 0,
                     "contains": [
                         "zoom user id"
-                    ]
+                    ],
+                    "primary": true
                 },
                 "password": {
                     "description": "Meeting password",
@@ -1041,23 +1042,42 @@
                 },
                 {
                     "data_path": "action_result.parameter.gen_password",
-                    "data_type": "boolean"
+                    "data_type": "boolean",
+                    "example_values": [
+                        "None",
+                        "True",
+                        "False"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.password",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "TestPass1"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.waiting_room",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "None",
+                        "True",
+                        "False"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.topic",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "Test Topic"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.agenda",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "Test Agenda"
+                    ]
                 },
                 {
                     "data_path": "action_result.status",
@@ -1631,6 +1651,10 @@
                     "data_type": "boolean"
                 },
                 {
+                    "data_path": "action_result.data.*.settings.host_save_video_order",
+                    "data_type": "boolean"
+                },
+                {
                     "data_path": "action_result.data.*.start_time",
                     "data_type": "string"
                 },
@@ -1736,7 +1760,6 @@
                     "data_type": "string",
                     "example_value": "410123"
                 },
-
                 {
                     "data_path": "action_result.data.*.tracking_fields.*.field",
                     "data_type": "string"
@@ -1834,7 +1857,12 @@
             "output": [
                 {
                     "data_path": "action_result.parameter.gen_password",
-                    "data_type": "boolean"
+                    "data_type": "boolean",
+                    "example_values": [
+                        "None",
+                        "True",
+                        "False"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.meeting_id",
@@ -1850,11 +1878,19 @@
                 },
                 {
                     "data_path": "action_result.parameter.password",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "TestPass1"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.waiting_room",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "None",
+                        "True",
+                        "False"
+                    ]
                 },
                 {
                     "data_path": "action_result.data",
@@ -2073,23 +2109,47 @@
             "output": [
                 {
                     "data_path": "action_result.parameter.gen_pmi_password",
-                    "data_type": "boolean"
+                    "data_type": "boolean",
+                    "example_values": [
+                        "None",
+                        "True",
+                        "False"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.pmi_password",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "Test@123"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.req_password_inst",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "None",
+                        "True",
+                        "False"
+                    ]
+
                 },
                 {
                     "data_path": "action_result.parameter.req_password_pmi",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "None",
+                        "True",
+                        "False"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.req_password_sched",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "None",
+                        "True",
+                        "False"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.user_id",
@@ -2103,7 +2163,12 @@
                 },
                 {
                     "data_path": "action_result.parameter.waiting_room",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "None",
+                        "True",
+                        "False"
+                    ]
                 },
                 {
                     "data_path": "action_result.data",
