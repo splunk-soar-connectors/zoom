@@ -19,7 +19,7 @@
     "fips_compliant": true,
     "app_wizard_version": "1.0.0",
     "latest_tested_versions": [
-        "Zoom Cloud 2022 on May 20, 2022"
+        "Zoom Cloud 2022 on Jun 05, 2022"
     ],
     "configuration": {
         "base_url": {
@@ -982,7 +982,7 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "column_name": "Status",
-                    "column_order": 3,
+                    "column_order": 4,
                     "example_values": [
                         "success",
                         "failed"
@@ -1082,7 +1082,9 @@
                 },
                 {
                     "data_path": "action_result.data.*.password",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Passcode",
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.pre_schedule",
