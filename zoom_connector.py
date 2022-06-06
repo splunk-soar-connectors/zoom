@@ -339,16 +339,15 @@ class ZoomConnector(BaseConnector):
             return action_result.get_status()
 
         action_result.add_data(res)
-        meeting_id = str(res['id'])
 
         action_result.update_summary({
-            'meeting_id': meeting_id,
+            'meeting_id': str(res['id']),
             'meeting_created': True,
             'password': password if password else 'Not Added',
             'waiting_room': ('Not Added' if waiting_room == 'None' else waiting_room)
         })
 
-        return action_result.set_status(phantom.APP_SUCCESS, 'Meeting {} successfully created'.format(meeting_id))
+        return action_result.set_status(phantom.APP_SUCCESS, 'Meeting {} successfully created'.format(res['id']))
 
     def _handle_update_meeting(self, param):
         self.save_progress('In action handler for: {0}'.format(self.get_action_identifier()))
