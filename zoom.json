@@ -1074,11 +1074,11 @@
                 {
                     "data_path": "action_result.data.*.join_url",
                     "data_type": "string",
-                    "column_name": "Join URL",
-                    "column_order": 2,
                     "contains": [
                         "url"
-                    ]
+                    ],
+                    "column_name": "Join URL",
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.data.*.password",
@@ -1389,6 +1389,9 @@
                 {
                     "data_path": "action_result.data.*.join_url",
                     "data_type": "string",
+                    "contains": [
+                        "url"
+                    ],
                     "column_name": "Join URL",
                     "column_order": 2
                 },
