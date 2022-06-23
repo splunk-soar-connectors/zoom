@@ -1,6 +1,6 @@
 # File: zoom_consts.py
 #
-# Copyright (c) 2021 Splunk Inc.
+# Copyright (c) 2021-2022 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 # the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 # either express or implied. See the License for the specific language governing permissions
 # and limitations under the License.
-ERR_CODE_MSG = "Error code unavailable"
-ERR_MSG_UNAVAILABLE = "Error message unavailable. Please check the asset configuration and|or action parameters"
-PARSE_ERR_MSG = "Unable to parse the error message. Please check the asset configuration and|or action parameters"
+ERR_CODE_MSG = 'Error code unavailable'
+ERR_MSG_UNAVAILABLE = 'Error message unavailable. Please check the asset configuration and|or action parameters'
+PARSE_ERR_MSG = 'Unable to parse the error message. Please check the asset configuration and|or action parameters'
+DEFAULT_TIMEOUT = 30  # seconds
