@@ -1,23 +1,33 @@
 # File: zoom_connector.py
-# Copyright (c) 2021 Splunk Inc.
 #
-# Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)
-
+# Copyright (c) 2021-2022 Splunk Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific language governing permissions
+# and limitations under the License.
+#
+#
 # Phantom App imports
+import json
+from datetime import datetime, timedelta
+from urllib.parse import unquote
+
+import jwt
 import phantom.app as phantom
-from phantom.base_connector import BaseConnector
+import requests
+from bs4 import BeautifulSoup, UnicodeDammit
+from password_generator import PasswordGenerator
 from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
 
 from zoom_consts import *
-import requests
-import json
-from bs4 import BeautifulSoup
-from datetime import datetime
-from datetime import timedelta
-import jwt
-from bs4 import UnicodeDammit
-from password_generator import PasswordGenerator
-from urllib.parse import unquote
 
 
 class RetVal(tuple):
@@ -53,17 +63,17 @@ class ZoomConnector(BaseConnector):
             else:
                 error_code = ERR_CODE_MSG
                 error_msg = ERR_MSG_UNAVAILABLE
-        except:
+        except Exception:
             error_code = ERR_CODE_MSG
             error_msg = ERR_MSG_UNAVAILABLE
 
         try:
             if error_code in ERR_CODE_MSG:
-                error_text = "Error Message: {0}".format(error_msg)
+                error_text = 'Error Message: {0}'.format(error_msg)
             else:
-                error_text = "Error Code: {0}. Error Message: {1}".format(error_code, error_msg)
-        except:
-            self.debug_print("Error occurred while parsing the error message")
+                error_text = 'Error Code: {0}. Error Message: {1}'.format(error_code, error_msg)
+        except Exception:
+            self.debug_print('Error occurred while parsing the error message')
             error_text = PARSE_ERR_MSG
 
         return error_text
@@ -73,7 +83,8 @@ class ZoomConnector(BaseConnector):
         if response.status_code in (200, 204):
             return RetVal(phantom.APP_SUCCESS, {})
 
-        return RetVal(action_result.set_status(phantom.APP_ERROR, "Status code: {}. Empty response and no information in the header".format(response.status_code)), None)
+        msg = 'Status code: {}. Empty response and no information in the header'.format(response.status_code)
+        return RetVal(action_result.set_status(phantom.APP_ERROR, msg), None)
 
     def _process_html_response(self, response, action_result):
 
@@ -81,18 +92,18 @@ class ZoomConnector(BaseConnector):
         status_code = response.status_code
 
         try:
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = BeautifulSoup(response.text, 'html.parser')
             # Remove the script, style, footer and navigation part from the HTML message
-            for element in soup(["script", "style", "footer", "nav"]):
+            for element in soup(['script', 'style', 'footer', 'nav']):
                 element.extract()
             error_text = soup.text
             split_lines = error_text.split('\n')
             split_lines = [x.strip() for x in split_lines if x.strip()]
             error_text = '\n'.join(split_lines)
-        except:
-            error_text = "Cannot parse error details"
+        except Exception:
+            error_text = 'Cannot parse error details'
 
-        message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code, unquote(error_text))
+        message = 'Status Code: {0}. Data from server:\n{1}\n'.format(status_code, unquote(error_text))
 
         message = message.replace('{', '{{').replace('}', '}}')
 
@@ -105,14 +116,14 @@ class ZoomConnector(BaseConnector):
             resp_json = r.json()
         except Exception as e:
             err_msg = self._get_error_message_from_exception(e)
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse JSON response. Error: {0}".format(err_msg), None))
+            return RetVal(action_result.set_status(phantom.APP_ERROR, 'Unable to parse JSON response. Error: {0}'.format(err_msg), None))
 
         # Please specify the status codes here
         if 200 <= r.status_code < 399:
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
         # You should process the error returned in the json
-        message = "Error from server. Status Code: {0} Data from server: {1}".format(
+        message = 'Error from server. Status Code: {0} Data from server: {1}'.format(
                 r.status_code, r.text.replace('{', '{{').replace('}', '}}'))
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
@@ -144,7 +155,7 @@ class ZoomConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
-    def _make_rest_call(self, endpoint, action_result, method="get", **kwargs):
+    def _make_rest_call(self, endpoint, action_result, method='get', **kwargs):
         # **kwargs can be any additional parameters that requests.request accepts
 
         config = self.get_config()
@@ -163,19 +174,23 @@ class ZoomConnector(BaseConnector):
         try:
             request_func = getattr(requests, method)
         except AttributeError:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Invalid method: {0}".format(method)), resp_json)
+            msg = 'Invalid method: {0}'.format(method)
+            self.error_print(msg)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
 
         # Create a URL to connect to
-        url = "{}{}".format(self._base_url, endpoint)
+        url = '{}{}'.format(self._base_url, endpoint)
 
         try:
             r = request_func(
                             url,
-                            verify=config.get('verify_server_cert', False),
+                            timeout=DEFAULT_TIMEOUT,
                             **kwargs)
         except Exception as e:
             err_msg = self._get_error_message_from_exception(e)
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Error connecting to server. {0}".format(err_msg)), resp_json)
+            msg = 'Error connecting to server. {0}'.format(err_msg)
+            self.error_print(msg)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -183,21 +198,21 @@ class ZoomConnector(BaseConnector):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        self.save_progress("Connecting to endpoint")
+        self.save_progress('Connecting to endpoint')
         # make rest call
         ret_val, _ = self._make_rest_call('/users', action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
-            self.save_progress("Test Connectivity Failed")
+            self.save_progress('Test Connectivity Failed')
             return action_result.get_status()
 
-        self.save_progress("Test Connectivity Passed")
-        self.save_progress("Connected to Zoom API successfully")
+        self.save_progress('Test Connectivity Passed')
+        self.save_progress('Connected to Zoom API successfully')
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_get_user_settings(self, param):
 
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress('In action handler for: {0}'.format(self.get_action_identifier()))
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -212,7 +227,7 @@ class ZoomConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS, 'User settings for id {} successfully retrieved'.format(user_id))
 
     def _handle_update_user_settings(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress('In action handler for: {0}'.format(self.get_action_identifier()))
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -224,25 +239,31 @@ class ZoomConnector(BaseConnector):
         req_password_inst = param.get('req_password_inst')
         req_password_pmi = param.get('req_password_pmi')
 
-        if not(pmi_password or waiting_room != "None" or req_password_sched != "None" or req_password_inst != "None"):
+        is_waiting_room_updated = waiting_room != 'None'
+        is_req_password_sched_updated = req_password_sched != 'None'  # pragma: allowlist secret
+        is_req_password_inst = req_password_inst != 'None'  # pragma: allowlist secret
+        if not(pmi_password or is_waiting_room_updated or is_req_password_sched_updated or is_req_password_inst):
             return action_result.set_status(phantom.APP_ERROR, 'No settings were selected for update')
 
         data = {}
 
-        if pmi_password or req_password_sched != 'None' or req_password_inst != 'None' or req_password_pmi != 'None':
+        if pmi_password or req_password_sched != 'None' or req_password_inst != 'None' or req_password_pmi != 'None':  # pragma: allowlist secret
             data['schedule_meeting'] = {}
             if pmi_password:
                 data['schedule_meeting']['pmi_password'] = pmi_password
             if req_password_sched:
-                data['schedule_meeting']['require_password_for_scheduling_new_meetings'] = req_password_sched == 'True'
+                is_req_pass_true = req_password_sched == 'True'  # pragma: allowlist secret
+                data['schedule_meeting']['require_password_for_scheduling_new_meetings'] = is_req_pass_true
             if req_password_inst:
-                data['schedule_meeting']['require_password_for_instant_meetings'] = req_password_inst == 'True'
+                is_req_pass_inst_true = req_password_inst == 'True'  # pragma: allowlist secret
+                data['schedule_meeting']['require_password_for_instant_meetings'] = is_req_pass_inst_true
             if req_password_pmi:
-                data['schedule_meeting']['require_password_for_pmi_meetings'] = ('all' if req_password_pmi == 'True' else 'none')
+                req_pass_pmi = 'all' if req_password_pmi == 'True' else 'none'  # pragma: allowlist secret
+                data['schedule_meeting']['require_password_for_pmi_meetings'] = req_pass_pmi
         if waiting_room != 'None':
             data['in_meeting'] = {'waiting_room': waiting_room == 'True'}
 
-        ret_val, _ = self._make_rest_call('/users/{}/settings'.format(user_id), action_result, json=data, headers=None, method="patch")
+        ret_val, _ = self._make_rest_call('/users/{}/settings'.format(user_id), action_result, json=data, headers=None, method='patch')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -250,21 +271,24 @@ class ZoomConnector(BaseConnector):
         action_result.update_summary({
             'pmi_password': ('Not Updated' if not(pmi_password) else pmi_password),
             'waiting_room': ('Not Updated' if waiting_room == 'None' else waiting_room),
-            'require_password_for_instant_meetings': ('Not Updated' if req_password_inst == 'None' else req_password_inst),
-            'require_password_for_scheduling_new_meetings': ('Not Updated' if req_password_sched == 'None' else req_password_sched),
-            'require_password_for_personal_meeting_instance': ('Not Updated' if req_password_pmi == 'None' else req_password_pmi)
+            'require_password_for_instant_meetings': ('Not Updated' if req_password_inst == 'None'  # pragma: allowlist secret
+                                                      else req_password_inst),
+            'require_password_for_scheduling_new_meetings': ('Not Updated' if req_password_sched == 'None'  # pragma: allowlist secret
+                                                             else req_password_sched),
+            'require_password_for_personal_meeting_instance': ('Not Updated' if req_password_pmi == 'None'  # pragma: allowlist secret
+                                                               else req_password_pmi)
         })
 
         return action_result.set_status(phantom.APP_SUCCESS, 'User {} successfully updated'.format(user_id))
 
     def _handle_delete_meeting(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress('In action handler for: {0}'.format(self.get_action_identifier()))
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         meeting_id = param['meeting_id']
 
-        ret_val, _ = self._make_rest_call('/meetings/{}'.format(meeting_id), action_result, headers=None, method="delete")
+        ret_val, _ = self._make_rest_call('/meetings/{}'.format(meeting_id), action_result, headers=None, method='delete')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -283,8 +307,50 @@ class ZoomConnector(BaseConnector):
         else:
             return password
 
+    def _handle_create_meeting(self, param):
+        self.save_progress('In action handler for: {0}'.format(self.get_action_identifier()))
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        user_id = param['user_id']
+        password = self._get_password(param.get('password'), param.get('gen_password'))
+        waiting_room = param.get('waiting_room')
+        topic = param.get('topic')
+        agenda = param.get('agenda')
+
+        data = {}
+
+        input_param_dict = {
+            'password': password,
+            'topic': topic,
+            'agenda': agenda,
+        }
+
+        for key, value in input_param_dict.items():
+            if value:
+                data[key] = value
+
+        if waiting_room != 'None':
+            data['settings'] = {'waiting_room': (waiting_room == 'True')}
+
+        ret_val, res = self._make_rest_call('/users/{}/meetings'.format(user_id), action_result, json=data, headers=None, method='post')
+
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
+
+        action_result.add_data(res)
+
+        action_result.update_summary({
+            'meeting_id': str(res['id']),
+            'meeting_created': True,
+            'password': password if password else 'Not Added',
+            'waiting_room': ('Not Added' if waiting_room == 'None' else waiting_room)
+        })
+
+        return action_result.set_status(phantom.APP_SUCCESS, 'Meeting {} successfully created'.format(res['id']))
+
     def _handle_update_meeting(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress('In action handler for: {0}'.format(self.get_action_identifier()))
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -292,17 +358,17 @@ class ZoomConnector(BaseConnector):
         password = self._get_password(param.get('password'), param.get('gen_password'))
         waiting_room = param.get('waiting_room')
 
-        if not(password or waiting_room != "None"):
+        if not(password or waiting_room != 'None'):
             return action_result.set_status(phantom.APP_ERROR, 'Either password or waiting room must be updated')
 
         data = {}
 
         if password:
             data['password'] = password
-        if waiting_room != "None":
+        if waiting_room != 'None':
             data['settings'] = {'waiting_room': (waiting_room == 'True')}
 
-        ret_val, _ = self._make_rest_call('/meetings/{}'.format(meeting_id), action_result, json=data, headers=None, method="patch")
+        ret_val, _ = self._make_rest_call('/meetings/{}'.format(meeting_id), action_result, json=data, headers=None, method='patch')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -315,8 +381,8 @@ class ZoomConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS, 'Meeting {} successfully updated'.format(meeting_id))
 
-    def _handle_get_meeting_invite(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+    def _handle_get_meeting_invitation(self, param):
+        self.save_progress('In action handler for: {0}'.format(self.get_action_identifier()))
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -330,7 +396,8 @@ class ZoomConnector(BaseConnector):
         parsed_fields = {}
 
         try:
-            for kv_pair in UnicodeDammit(response.get('invitation', '')).unicode_markup.replace('Join Zoom Meeting\r\n', 'invitation_link:').split('\r\n'):
+            for kv_pair in UnicodeDammit(response.get('invitation', '')).unicode_markup.replace('Join Zoom Meeting\r\n',
+                                                                                                'invitation_link:').split('\r\n'):
                 if kv_pair:
                     parts = kv_pair.split(':')
                     second_part = ':'.join(parts[1:]).strip()
@@ -342,7 +409,7 @@ class ZoomConnector(BaseConnector):
 
         except Exception as err:
             err_msg = self._get_error_message_from_exception(err)
-            self.debug_print("Error: {}".format(err_msg))
+            self.debug_print('Error: {}'.format(err_msg))
             self.save_progress('Could not parse invitation fields')
 
         response['parsed_fields'] = parsed_fields
@@ -352,7 +419,7 @@ class ZoomConnector(BaseConnector):
 
     def _handle_get_user(self, param):
 
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress('In action handler for: {0}'.format(self.get_action_identifier()))
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -368,7 +435,7 @@ class ZoomConnector(BaseConnector):
 
     def _handle_get_meeting(self, param):
 
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress('In action handler for: {0}'.format(self.get_action_identifier()))
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -399,7 +466,7 @@ class ZoomConnector(BaseConnector):
         # Get the action that we are supposed to execute for this App Run
         action_id = self.get_action_identifier()
 
-        self.debug_print("action_id: {}".format(self.get_action_identifier()))
+        self.debug_print('action_id: {}'.format(self.get_action_identifier()))
 
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
@@ -407,11 +474,14 @@ class ZoomConnector(BaseConnector):
         elif action_id == 'get_user':
             ret_val = self._handle_get_user(param)
 
+        elif action_id == 'create_meeting':
+            ret_val = self._handle_create_meeting(param)
+
         elif action_id == 'get_meeting':
             ret_val = self._handle_get_meeting(param)
 
         elif action_id == 'get_meeting_invitation':
-            ret_val = self._handle_get_meeting_invite(param)
+            ret_val = self._handle_get_meeting_invitation(param)
 
         elif action_id == 'update_meeting':
             ret_val = self._handle_update_meeting(param)
@@ -435,7 +505,7 @@ class ZoomConnector(BaseConnector):
         # Get the asset config
         config = self.get_config()
 
-        self._base_url = config['base_url'].rstrip("/")
+        self._base_url = config['base_url'].rstrip('/')
 
         return phantom.APP_SUCCESS
 
@@ -448,8 +518,10 @@ class ZoomConnector(BaseConnector):
 
 if __name__ == '__main__':
 
-    import pudb
     import argparse
+    import sys
+
+    import pudb
 
     pudb.set_trace()
 
@@ -469,14 +541,14 @@ if __name__ == '__main__':
 
         # User specified a username but not a password, so ask
         import getpass
-        password = getpass.getpass("Password: ")
+        password = getpass.getpass('Password: ')
 
     if (username and password):
         try:
             login_url = ZoomConnector._get_phantom_base_url() + '/login'
 
-            print("Accessing the Login page")
-            r = requests.get(login_url, verify=False)
+            print('Accessing the Login page')
+            r = requests.get(login_url, timeout=DEFAULT_TIMEOUT)
             csrftoken = r.cookies['csrftoken']
 
             data = dict()
@@ -488,12 +560,12 @@ if __name__ == '__main__':
             headers['Cookie'] = 'csrftoken=' + csrftoken
             headers['Referer'] = login_url
 
-            print("Logging into Platform to get the session id")
-            r2 = requests.post(login_url, verify=False, data=data, headers=headers)
+            print('Logging into Platform to get the session id')
+            r2 = requests.post(login_url, timeout=DEFAULT_TIMEOUT, data=data, headers=headers)
             session_id = r2.cookies['sessionid']
         except Exception as e:
-            print("Unable to get session id from the platform. Error: " + str(e))
-            exit(1)
+            print('Unable to get session id from the platform. Error: ' + str(e))
+            sys.exit(1)
 
     with open(args.input_test_json) as f:
         in_json = f.read()
@@ -510,4 +582,4 @@ if __name__ == '__main__':
         ret_val = connector._handle_action(json.dumps(in_json), None)
         print(json.dumps(json.loads(ret_val), indent=4))
 
-    exit(0)
+    sys.exit(0)
