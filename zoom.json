@@ -45,7 +45,7 @@
     "pip_dependencies": {
         "wheel": [
             {
-                "module": "PyJWT",
+                "module": "jwt",
                 "input_file": "wheels/py3/PyJWT-2.4.0-py3-none-any.whl"
             },
             {
