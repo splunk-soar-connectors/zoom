@@ -2,11 +2,11 @@
 # Zoom
 
 Publisher: Splunk  
-Connector Version: 2\.0\.0  
+Connector Version: 2\.0\.1  
 Product Vendor: Zoom  
 Product Name: Zoom Meetings  
 Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 5\.2\.0  
+Minimum Product Version: 5\.3\.0  
 
 The app integrates with Zoom Meetings API to perform investigative and generic actions
 
