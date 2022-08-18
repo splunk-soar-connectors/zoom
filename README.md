@@ -2,7 +2,7 @@
 # Zoom
 
 Publisher: Splunk  
-Connector Version: 2\.0\.1  
+Connector Version: 2\.0\.2  
 Product Vendor: Zoom  
 Product Name: Zoom Meetings  
 Product Version Supported (regex): "\.\*"  
