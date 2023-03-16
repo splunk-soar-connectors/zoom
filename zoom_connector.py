@@ -15,11 +15,10 @@
 #
 #
 # Phantom App imports
+import base64
 import json
-from datetime import datetime, timedelta
 from urllib.parse import unquote
 
-import jwt
 import phantom.app as phantom
 import requests
 from bs4 import BeautifulSoup, UnicodeDammit
@@ -159,12 +158,10 @@ class ZoomConnector(BaseConnector):
         # **kwargs can be any additional parameters that requests.request accepts
 
         config = self.get_config()
-        token = self._get_jwt(config)
 
         headers = {
-            'Authorization': 'bearer {}'.format(token),
-            'User-Agent': 'Zoom-Jwt-Request',
-            'content-type': 'application/json'
+            'Authorization': 'Bearer {}'.format(self.token),
+            'content-type': 'application/json',
         }
 
         kwargs['headers'] = headers
@@ -186,6 +183,19 @@ class ZoomConnector(BaseConnector):
                             url,
                             timeout=DEFAULT_TIMEOUT,
                             **kwargs)
+            if int(r.status_code) != 204:
+                resp_json = r.json()
+                if resp_json.get('code', 401) == 124 and resp_json.get("message", "") == "Access token is expired.":
+                    self._get_token(config)
+                    headers = {
+                        'Authorization': 'Bearer {}'.format(self.token),
+                        'content-type': 'application/json'
+                    }
+                    kwargs['headers'] = headers
+                    r = request_func(
+                                url,
+                                timeout=DEFAULT_TIMEOUT,
+                                **kwargs)
         except Exception as e:
             err_msg = self._get_error_message_from_exception(e)
             msg = 'Error connecting to server. {0}'.format(err_msg)
@@ -449,15 +459,23 @@ class ZoomConnector(BaseConnector):
         action_result.add_data(response)
         return action_result.set_status(phantom.APP_SUCCESS, 'Meeting information for id {} successfully retrieved'.format(meeting_id))
 
-    def _get_jwt(self, config):
-        payload = {
-            'iss': config['api_key'],
-            'exp': datetime.now() + timedelta(hours=8)
+    def _get_token(self, config):
+        client_id = config["client_id"]
+        client_secret = config["client_secret"]
+        auth_string = f"{client_id}:{client_secret}"
+        auth_string = auth_string.encode("ascii")
+        encoded_string = base64.b64encode(auth_string)
+        encoded_string = encoded_string.decode("ascii")
+        headers = {
+            "Authorization": "Basic {}".format(encoded_string)
         }
-
-        token = jwt.encode(payload, config['api_secret'])
-
-        return token
+        params = {
+            "grant_type": "account_credentials",
+            "account_id": config["account_id"]
+        }
+        response = requests.post("https://zoom.us/oauth/token", params=params, headers=headers)
+        self.token = json.loads(response.text)["access_token"]
+        self._state["token"] = self.token
 
     def handle_action(self, param):
 
@@ -506,7 +524,11 @@ class ZoomConnector(BaseConnector):
         config = self.get_config()
 
         self._base_url = config['base_url'].rstrip('/')
-
+        token = self._state.get("token", "")
+        if not token:
+            self._get_token(config)
+        else:
+            self.token = token
         return phantom.APP_SUCCESS
 
     def finalize(self):
