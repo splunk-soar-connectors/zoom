@@ -185,7 +185,7 @@ class ZoomConnector(BaseConnector):
                             **kwargs)
             if int(r.status_code) != 204:
                 resp_json = r.json()
-                if resp_json.get('code', 401) == 124 and resp_json.get("message", "") == "Access token is expired.":
+                if resp_json.get('code', 401) == 124 and (resp_json.get("message", "") == "Invalid access token." or resp_json.get("message","") == "Access token is expired."):
                     self._get_token(config)
                     headers = {
                         'Authorization': 'Bearer {}'.format(self.token),
