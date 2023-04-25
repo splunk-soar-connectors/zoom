@@ -16,6 +16,7 @@
 #
 # Phantom App imports
 import base64
+import encryption_helper
 import json
 from urllib.parse import unquote
 
@@ -528,12 +529,13 @@ class ZoomConnector(BaseConnector):
         if not token:
             self._get_token(config)
         else:
-            self.token = token
+            self.token = encryption_helper.decrypt(token, self.get_asset_id())
         return phantom.APP_SUCCESS
 
     def finalize(self):
 
         # Save the state, this data is saved across actions and app upgrades
+        self._state["token"] = encryption_helper.encrypt(self.token, self.get_asset_id())
         self.save_state(self._state)
         return phantom.APP_SUCCESS
 
