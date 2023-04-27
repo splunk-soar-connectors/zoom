@@ -16,10 +16,10 @@
 #
 # Phantom App imports
 import base64
-import encryption_helper
 import json
 from urllib.parse import unquote
 
+import encryption_helper
 import phantom.app as phantom
 import requests
 from bs4 import BeautifulSoup, UnicodeDammit
@@ -186,7 +186,7 @@ class ZoomConnector(BaseConnector):
                             **kwargs)
             if int(r.status_code) != 204:
                 resp_json = r.json()
-                if resp_json.get('code', 401) == 124 and (resp_json.get("message", "") == "Invalid access token." or resp_json.get("message","") == "Access token is expired."):
+                if resp_json.get('code', 401) == 124 and (resp_json.get("message", "") == "Invalid access token." or resp_json.get("message", "") == "Access token is expired."):
                     self._get_token(config)
                     headers = {
                         'Authorization': 'Bearer {}'.format(self.token),
@@ -475,7 +475,7 @@ class ZoomConnector(BaseConnector):
             "account_id": config["account_id"]
         }
         response = requests.post("https://zoom.us/oauth/token", params=params, headers=headers)
-        self.token = json.loads(response.text)["access_token"]
+        self.token = json.loads(response.text).get("access_token",None)
         self._state["token"] = self.token
 
     def handle_action(self, param):
@@ -525,19 +525,19 @@ class ZoomConnector(BaseConnector):
         config = self.get_config()
 
         self._base_url = config['base_url'].rstrip('/')
-        token = self._state.get("token", "")
-        if not token:
-            self._get_token(config)
-        else:
-            self.token = encryption_helper.decrypt(token, self.get_asset_id())
+        self._get_token(config)
+        if self.token is not None:
+            self.token = encryption_helper.decrypt(self.token, self.get_asset_id())
         return phantom.APP_SUCCESS
 
     def finalize(self):
 
         # Save the state, this data is saved across actions and app upgrades
-        self._state["token"] = encryption_helper.encrypt(self.token, self.get_asset_id())
-        self.save_state(self._state)
+        if self.token is not None:
+            self._state["token"] = encryption_helper.encrypt(self.token, self.get_asset_id())
+            self.save_state(self._state)
         return phantom.APP_SUCCESS
+        
 
 
 if __name__ == '__main__':

@@ -11,7 +11,7 @@
     "product_version_regex": ".*",
     "publisher": "Splunk",
     "license": "Copyright (c) 2021-2022 Splunk Inc.",
-    "app_version": "2.0.2",
+    "app_version": "3.0.0",
     "utctime_updated": "2022-08-18T22:38:54.000000Z",
     "package_name": "phantom_zoom",
     "main_module": "zoom_connector.py",
@@ -140,7 +140,10 @@
                 },
                 {
                     "data_path": "action_result.data.*.invitation",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "contains": [
+                        "url"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.parsed_fields.invitation_link",
@@ -802,11 +805,15 @@
                 },
                 {
                     "data_path": "action_result.data.*.email",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Email",
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.data.*.first_name",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "First Name",
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.data.*.group_ids",
@@ -846,7 +853,9 @@
                 },
                 {
                     "data_path": "action_result.data.*.last_name",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Last Name",
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.location",
