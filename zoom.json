@@ -140,16 +140,16 @@
                 },
                 {
                     "data_path": "action_result.data.*.invitation",
-                    "data_type": "string",
-                    "contains": [
-                        "url"
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parsed_fields.invitation_link",
                     "data_type": "string",
                     "column_name": "Invitation Link",
-                    "column_order": 1
+                    "column_order": 1,
+                    "contains": [
+                        "url"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.parsed_fields.meeting_id",
@@ -807,7 +807,10 @@
                     "data_path": "action_result.data.*.email",
                     "data_type": "string",
                     "column_name": "Email",
-                    "column_order": 1
+                    "column_order": 1,
+                    "contains": [
+                        "email"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.first_name",

@@ -464,9 +464,15 @@ class ZoomConnector(BaseConnector):
         client_id = config["client_id"]
         client_secret = config["client_secret"]
         auth_string = f"{client_id}:{client_secret}"
-        auth_string = auth_string.encode("ascii")
-        encoded_string = base64.b64encode(auth_string)
-        encoded_string = encoded_string.decode("ascii")
+        try:
+            auth_string = auth_string.encode("ascii")
+            encoded_string = base64.b64encode(auth_string)
+            encoded_string = encoded_string.decode("ascii")
+        except Exception:
+            self.save_progress("Error in encoding client id or client secret")
+            self.token = None
+            self._state["token"] = self.token
+            return 
         headers = {
             "Authorization": "Basic {}".format(encoded_string)
         }
@@ -523,10 +529,11 @@ class ZoomConnector(BaseConnector):
 
         # Get the asset config
         config = self.get_config()
-
+        self.token = self._state.get("token",None)
         self._base_url = config['base_url'].rstrip('/')
-        self._get_token(config)
-        if self.token is not None:
+        if self.get_action_identifier() == "test_connectivity" or not self.token:
+            self._get_token(config)
+        if self.token:
             self.token = encryption_helper.decrypt(self.token, self.get_asset_id())
         return phantom.APP_SUCCESS
 
@@ -535,7 +542,7 @@ class ZoomConnector(BaseConnector):
         # Save the state, this data is saved across actions and app upgrades
         if self.token is not None:
             self._state["token"] = encryption_helper.encrypt(self.token, self.get_asset_id())
-            self.save_state(self._state)
+        self.save_state(self._state)
         return phantom.APP_SUCCESS
         
 
