@@ -67,6 +67,10 @@
                 "input_file": "wheels/shared/idna-2.10-py2.py3-none-any.whl"
             },
             {
+                "module": "random_password_generator",
+                "input_file": "wheels/py3/random_password_generator-2.1.0-py3-none-any.whl"
+            },
+            {
                 "module": "requests",
                 "input_file": "wheels/shared/requests-2.25.0-py2.py3-none-any.whl"
             },
@@ -2405,6 +2409,10 @@
             {
                 "module": "idna",
                 "input_file": "wheels/shared/idna-2.10-py2.py3-none-any.whl"
+            },
+            {
+                "module": "random_password_generator",
+                "input_file": "wheels/py3/random_password_generator-2.1.0-py3-none-any.whl"
             },
             {
                 "module": "requests",
