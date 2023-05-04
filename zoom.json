@@ -10,16 +10,16 @@
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2021-2022 Splunk Inc.",
+    "license": "Copyright (c) 2021-2023 Splunk Inc.",
     "app_version": "3.0.0",
     "utctime_updated": "2022-08-18T22:38:54.000000Z",
     "package_name": "phantom_zoom",
     "main_module": "zoom_connector.py",
-    "min_phantom_version": "5.3.0",
+    "min_phantom_version": "5.5.0",
     "fips_compliant": true,
     "app_wizard_version": "1.0.0",
     "latest_tested_versions": [
-        "Zoom Cloud 2022 on Jun 05, 2022"
+        "Zoom Cloud 2023 on May 02, 2023"
     ],
     "configuration": {
         "base_url": {
@@ -29,38 +29,34 @@
             "default": "https://api.zoom.us/v2",
             "order": 0
         },
-        "client_id": {
-            "description": "client id",
-            "data_type": "string",
-            "required": true,
-            "order": 1
-        },
         "account_id": {
-            "description": "account id",
+            "description": "Account Id",
             "data_type": "string",
             "required": true,
             "order": 1
         },
-        "client_secret": {
-            "description": "client Secret",
-            "data_type": "password",
+        "client_id": {
+            "description": "Client Id",
+            "data_type": "string",
             "required": true,
             "order": 2
+        },
+        "client_secret": {
+            "description": "Client Secret",
+            "data_type": "password",
+            "required": true,
+            "order": 3
         }
     },
     "pip_dependencies": {
         "wheel": [
-            {
-                "module": "PyJWT",
-                "input_file": "wheels/py3/PyJWT-2.4.0-py3-none-any.whl"
-            },
             {
                 "module": "beautifulsoup4",
                 "input_file": "wheels/py3/beautifulsoup4-4.9.1-py3-none-any.whl"
             },
             {
                 "module": "certifi",
-                "input_file": "wheels/py3/certifi-2022.6.15-py3-none-any.whl"
+                "input_file": "wheels/py3/certifi-2022.12.7-py3-none-any.whl"
             },
             {
                 "module": "chardet",
@@ -69,10 +65,6 @@
             {
                 "module": "idna",
                 "input_file": "wheels/shared/idna-2.10-py2.py3-none-any.whl"
-            },
-            {
-                "module": "random_password_generator",
-                "input_file": "wheels/py3/random_password_generator-2.1.0-py3-none-any.whl"
             },
             {
                 "module": "requests",
@@ -84,7 +76,7 @@
             },
             {
                 "module": "urllib3",
-                "input_file": "wheels/shared/urllib3-1.26.11-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/urllib3-1.26.15-py2.py3-none-any.whl"
             }
         ]
     },
@@ -289,8 +281,39 @@
                     "data_type": "numeric"
                 },
                 {
+                    "data_path": "action_result.data.*.feature.zoom_customer_managed_key",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.feature.zoom_events",
                     "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.data.*.feature.zoom_events_consumption",
+                    "data_type": "string",
+                    "example_values": [
+                        "None"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.feature.zoom_events_saas",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.feature.zoom_huddles",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.feature.zoom_iq_for_sales",
@@ -299,6 +322,54 @@
                 {
                     "data_path": "action_result.data.*.feature.zoom_phone",
                     "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.data.*.feature.zoom_quality_management",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.feature.zoom_spots",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.feature.zoom_translated_captions",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.feature.zoom_whiteboard",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.feature.zoom_whiteboard_plus",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.feature.zoom_workforce_management",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.in_meeting.allow_live_streaming",
@@ -319,6 +390,14 @@
                 {
                     "data_path": "action_result.data.*.in_meeting.allow_users_save_chats",
                     "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.data.*.in_meeting.allow_users_to_delete_messages_in_meeting_chat",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.in_meeting.annotation",
@@ -353,12 +432,36 @@
                     "data_type": "boolean"
                 },
                 {
+                    "data_path": "action_result.data.*.in_meeting.closed_captioning.auto_transcribing",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.in_meeting.closed_captioning.enable",
                     "data_type": "boolean"
                 },
                 {
                     "data_path": "action_result.data.*.in_meeting.closed_captioning.save_caption",
                     "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.data.*.in_meeting.closed_captioning.third_party_captioning_service",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.in_meeting.closed_captioning.view_full_transcript",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.in_meeting.co_host",
@@ -421,6 +524,14 @@
                     "data_type": "boolean"
                 },
                 {
+                    "data_path": "action_result.data.*.in_meeting.manual_captioning.third_party_captioning_service",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.in_meeting.meeting_polling.enable",
                     "data_type": "boolean"
                 },
@@ -429,12 +540,38 @@
                     "data_type": "boolean"
                 },
                 {
+                    "data_path": "action_result.data.*.in_meeting.meeting_reactions_emojis",
+                    "data_type": "string",
+                    "example_values": [
+                        "all"
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.in_meeting.non_verbal_feedback",
                     "data_type": "boolean"
                 },
                 {
+                    "data_path": "action_result.data.*.in_meeting.participants_share_simultaneously",
+                    "data_type": "string",
+                    "example_values": [
+                        "one"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.in_meeting.participants_to_place_in_waiting_room",
+                    "data_type": "numeric"
+                },
+                {
                     "data_path": "action_result.data.*.in_meeting.polling",
                     "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.data.*.in_meeting.post_meeting_feedback",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.in_meeting.private_chat",
@@ -473,8 +610,24 @@
                     "data_type": "boolean"
                 },
                 {
+                    "data_path": "action_result.data.*.in_meeting.sign_language_interpretation.enable",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.in_meeting.slide_control",
                     "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.data.*.in_meeting.transfer_meetings_between_devices",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.in_meeting.virtual_background",
@@ -499,6 +652,14 @@
                 {
                     "data_path": "action_result.data.*.in_meeting.webinar_polling.enable",
                     "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.data.*.in_meeting.whiteboard",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.in_meeting.who_can_share_screen",
@@ -769,15 +930,7 @@
                 },
                 {
                     "data_path": "action_result.parameter.user_id",
-                    "data_type": "string",
-                    "contains": [
-                        "zoom user id"
-                    ],
-                    "column_name": "User ID",
-                    "column_order": 0,
-                    "example_values": [
-                        "A0BiCtoDEFGHIzYaZcLdsA"
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.account_id",
@@ -786,6 +939,13 @@
                 {
                     "data_path": "action_result.data.*.account_number",
                     "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.data.*.cluster",
+                    "data_type": "string",
+                    "example_values": [
+                        "us05"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.cms_user_id",
@@ -800,8 +960,33 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.custom_attributes.*.key",
+                    "data_type": "string",
+                    "example_values": [
+                        "cbf_{0}&&&&cbf_p9y_qhefsveacfrdepuvzw"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.custom_attributes.*.name",
+                    "data_type": "string",
+                    "example_values": [
+                        "id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.custom_attributes.*.value",
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.dept",
                     "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.display_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "Herman Edwards"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.email",
@@ -828,7 +1013,15 @@
                 },
                 {
                     "data_path": "action_result.data.*.id",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "contains": [
+                        "zoom user id"
+                    ],
+                    "column_name": "User ID",
+                    "column_order": 0,
+                    "example_values": [
+                        "A0BiCtoDEFGHIzYaZcLdsA"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.im_group_ids",
@@ -907,6 +1100,13 @@
                 {
                     "data_path": "action_result.data.*.use_pmi",
                     "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.data.*.user_created_at",
+                    "data_type": "string",
+                    "example_values": [
+                        "2023-03-01T07:08:51Z"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.vanity_url",
@@ -1040,24 +1240,13 @@
                 },
                 {
                     "data_path": "action_result.parameter.user_id",
-                    "data_type": "string",
-                    "column_name": "User ID",
-                    "column_order": 0,
-                    "contains": [
-                        "zoom user id",
-                        "email"
-                    ],
-                    "example_values": [
-                        "A0BiCtoDEFGHIzYaZcLdsA"
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.parameter.waiting_room",
                     "data_type": "string",
                     "example_values": [
-                        "None",
-                        "True",
-                        "False"
+                        "None"
                     ]
                 },
                 {
@@ -1086,7 +1275,16 @@
                 },
                 {
                     "data_path": "action_result.data.*.host_id",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Host ID",
+                    "column_order": 0,
+                    "contains": [
+                        "zoom user id",
+                        "email"
+                    ],
+                    "example_values": [
+                        "A0BiCtoDEFGHIzYaZcLdsA"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.id",
@@ -1166,6 +1364,14 @@
                 {
                     "data_path": "action_result.data.*.settings.email_notification",
                     "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.data.*.settings.enable_dedicated_group_chat",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.settings.encryption_type",
@@ -1555,6 +1761,14 @@
                     "data_type": "boolean"
                 },
                 {
+                    "data_path": "action_result.data.*.settings.enable_dedicated_group_chat",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.settings.encryption_type",
                     "data_type": "string"
                 },
@@ -1645,6 +1859,14 @@
                 {
                     "data_path": "action_result.data.*.settings.request_permission_to_unmute_participants",
                     "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.data.*.settings.show_join_info",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.settings.show_share_button",
@@ -1811,9 +2033,7 @@
                     "data_path": "action_result.parameter.waiting_room",
                     "data_type": "string",
                     "example_values": [
-                        "None",
-                        "True",
-                        "False"
+                        "None"
                     ]
                 },
                 {
@@ -2025,7 +2245,7 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "column_name": "Status",
-                    "column_order": 0,
+                    "column_order": 1,
                     "example_values": [
                         "success",
                         "failed"
@@ -2051,27 +2271,21 @@
                     "data_path": "action_result.parameter.req_password_inst",
                     "data_type": "string",
                     "example_values": [
-                        "None",
-                        "True",
-                        "False"
+                        "None"
                     ]
                 },
                 {
                     "data_path": "action_result.parameter.req_password_pmi",
                     "data_type": "string",
                     "example_values": [
-                        "None",
-                        "True",
-                        "False"
+                        "None"
                     ]
                 },
                 {
                     "data_path": "action_result.parameter.req_password_sched",
                     "data_type": "string",
                     "example_values": [
-                        "None",
-                        "True",
-                        "False"
+                        "None"
                     ]
                 },
                 {
@@ -2085,12 +2299,22 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.parameter.user_id",
+                    "data_type": "string",
+                    "contains": [
+                        "zoom user id"
+                    ],
+                    "column_name": "User ID",
+                    "column_order": 0,
+                    "example_values": [
+                        "A0BiCtoDEFGHIzYaZcLdsA"
+                    ]
+                },
+                {
                     "data_path": "action_result.parameter.waiting_room",
                     "data_type": "string",
                     "example_values": [
-                        "None",
-                        "True",
-                        "False"
+                        "None"
                     ]
                 },
                 {
@@ -2156,5 +2380,37 @@
             },
             "versions": "EQ(*)"
         }
-    ]
+    ],
+    "pip39_dependencies": {
+        "wheel": [
+            {
+                "module": "beautifulsoup4",
+                "input_file": "wheels/py3/beautifulsoup4-4.9.1-py3-none-any.whl"
+            },
+            {
+                "module": "certifi",
+                "input_file": "wheels/py3/certifi-2022.12.7-py3-none-any.whl"
+            },
+            {
+                "module": "chardet",
+                "input_file": "wheels/shared/chardet-3.0.4-py2.py3-none-any.whl"
+            },
+            {
+                "module": "idna",
+                "input_file": "wheels/shared/idna-2.10-py2.py3-none-any.whl"
+            },
+            {
+                "module": "requests",
+                "input_file": "wheels/shared/requests-2.25.0-py2.py3-none-any.whl"
+            },
+            {
+                "module": "soupsieve",
+                "input_file": "wheels/py3/soupsieve-2.4.1-py3-none-any.whl"
+            },
+            {
+                "module": "urllib3",
+                "input_file": "wheels/shared/urllib3-1.26.15-py2.py3-none-any.whl"
+            }
+        ]
+    }
 }

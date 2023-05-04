@@ -1,6 +1,6 @@
 # File: zoom_connector.py
 #
-# Copyright (c) 2021-2022 Splunk Inc.
+# Copyright (c) 2021-2023 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -115,8 +115,8 @@ class ZoomConnector(BaseConnector):
         try:
             resp_json = r.json()
         except Exception as e:
-            err_msg = self._get_error_message_from_exception(e)
-            return RetVal(action_result.set_status(phantom.APP_ERROR, 'Unable to parse JSON response. Error: {0}'.format(err_msg), None))
+            error_msg = self._get_error_message_from_exception(e)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, 'Unable to parse JSON response. Error: {0}'.format(error_msg), None))
 
         # Please specify the status codes here
         if 200 <= r.status_code < 399:
@@ -186,7 +186,7 @@ class ZoomConnector(BaseConnector):
                             **kwargs)
             if int(r.status_code) != 204:
                 resp_json = r.json()
-                if resp_json.get('code', 401) == 124 and (resp_json.get("message", "") == "Invalid access token." or resp_json.get("message", "") == "Access token is expired."):
+                if resp_json.get('code', 401) == 124 and (resp_json.get("message", "") == "Invalid access token." or resp_json.get("message", "") == "Access token is expired."):  # noqa: E501
                     self._get_token(config)
                     headers = {
                         'Authorization': 'Bearer {}'.format(self.token),
@@ -198,8 +198,8 @@ class ZoomConnector(BaseConnector):
                                 timeout=DEFAULT_TIMEOUT,
                                 **kwargs)
         except Exception as e:
-            err_msg = self._get_error_message_from_exception(e)
-            msg = 'Error connecting to server. {0}'.format(err_msg)
+            error_msg = self._get_error_message_from_exception(e)
+            msg = 'Error connecting to server. {0}'.format(error_msg)
             self.error_print(msg)
             return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
 
@@ -418,9 +418,9 @@ class ZoomConnector(BaseConnector):
             if parsed_fields.get('meeting_id'):
                 parsed_fields['meeting_id'] = parsed_fields['meeting_id'].replace(' ', '')
 
-        except Exception as err:
-            err_msg = self._get_error_message_from_exception(err)
-            self.debug_print('Error: {}'.format(err_msg))
+        except Exception as e:
+            error_msg = self._get_error_message_from_exception(e)
+            self.debug_print('Error: {}'.format(error_msg))
             self.save_progress('Could not parse invitation fields')
 
         response['parsed_fields'] = parsed_fields
@@ -472,7 +472,7 @@ class ZoomConnector(BaseConnector):
             self.save_progress("Error in encoding client id or client secret")
             self.token = None
             self._state["token"] = self.token
-            return 
+            return
         headers = {
             "Authorization": "Basic {}".format(encoded_string)
         }
@@ -480,8 +480,14 @@ class ZoomConnector(BaseConnector):
             "grant_type": "account_credentials",
             "account_id": config["account_id"]
         }
-        response = requests.post("https://zoom.us/oauth/token", params=params, headers=headers)
-        self.token = json.loads(response.text).get("access_token",None)
+        try:
+            response = requests.post("https://zoom.us/oauth/token", params=params, headers=headers)  # nosemgrep
+        except Exception:
+            self.save_progress("Error in connecting to the server")
+            self.token = None
+            self._state["token"] = self.token
+            return
+        self.token = json.loads(response.text).get("access_token", None)
         self._state["token"] = self.token
 
     def handle_action(self, param):
@@ -529,12 +535,15 @@ class ZoomConnector(BaseConnector):
 
         # Get the asset config
         config = self.get_config()
-        self.token = self._state.get("token",None)
+        self.token = self._state.get("token", None)
         self._base_url = config['base_url'].rstrip('/')
+        if self.token:
+            try:
+                self.token = encryption_helper.decrypt(self.token, self.get_asset_id())
+            except Exception:
+                self.save_progress("error in decrypting token")
         if self.get_action_identifier() == "test_connectivity" or not self.token:
             self._get_token(config)
-        if self.token:
-            self.token = encryption_helper.decrypt(self.token, self.get_asset_id())
         return phantom.APP_SUCCESS
 
     def finalize(self):
@@ -544,7 +553,6 @@ class ZoomConnector(BaseConnector):
             self._state["token"] = encryption_helper.encrypt(self.token, self.get_asset_id())
         self.save_state(self._state)
         return phantom.APP_SUCCESS
-        
 
 
 if __name__ == '__main__':
