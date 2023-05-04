@@ -115,8 +115,8 @@ class ZoomConnector(BaseConnector):
         try:
             resp_json = r.json()
         except Exception as e:
-            error_msg = self._get_error_message_from_exception(e)
-            return RetVal(action_result.set_status(phantom.APP_ERROR, 'Unable to parse JSON response. Error: {0}'.format(error_msg), None))
+            error_message = self._get_error_message_from_exception(e)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, 'Unable to parse JSON response. Error: {0}'.format(error_message), None))
 
         # Please specify the status codes here
         if 200 <= r.status_code < 399:
@@ -198,9 +198,9 @@ class ZoomConnector(BaseConnector):
                                 timeout=DEFAULT_TIMEOUT,
                                 **kwargs)
         except Exception as e:
-            error_msg = self._get_error_message_from_exception(e)
-            msg = 'Error connecting to server. {0}'.format(error_msg)
-            self.error_print(msg)
+            error_message = self._get_error_message_from_exception(e)
+            message = 'Error connecting to server. {0}'.format(error_message)
+            self.error_print(message)
             return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
 
         return self._process_response(r, action_result)
@@ -419,8 +419,8 @@ class ZoomConnector(BaseConnector):
                 parsed_fields['meeting_id'] = parsed_fields['meeting_id'].replace(' ', '')
 
         except Exception as e:
-            error_msg = self._get_error_message_from_exception(e)
-            self.debug_print('Error: {}'.format(error_msg))
+            error_message = self._get_error_message_from_exception(e)
+            self.debug_print('Error: {}'.format(error_message))
             self.save_progress('Could not parse invitation fields')
 
         response['parsed_fields'] = parsed_fields
