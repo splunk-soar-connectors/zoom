@@ -197,11 +197,13 @@ class ZoomConnector(BaseConnector):
                                 url,
                                 timeout=DEFAULT_TIMEOUT,
                                 **kwargs)
+                    if not self.token:
+                        return RetVal(action_result.set_status(phantom.APP_ERROR, 'Invalid token, please rerun the test connectivity'), r)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             message = 'Error connecting to server. {0}'.format(error_message)
             self.error_print(message)
-            return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, message), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -483,7 +485,7 @@ class ZoomConnector(BaseConnector):
         try:
             response = requests.post("https://zoom.us/oauth/token", params=params, headers=headers)  # nosemgrep
         except Exception:
-            self.save_progress("Error in connecting to the server")
+            self.debug_print("Error in connecting to the server")
             self.token = None
             self._state["token"] = self.token
             return
