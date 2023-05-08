@@ -43,38 +43,35 @@ class ZoomConnector(BaseConnector):
         super(ZoomConnector, self).__init__()
 
         self._state = None
-
+        self.token = None
         self._base_url = None
 
     def _get_error_message_from_exception(self, e):
-        """ This method is used to get appropriate error messages from the exception.
+        """
+        Get appropriate error message from the exception.
         :param e: Exception object
         :return: error message
         """
 
+        error_code = None
+        error_msg = ERROR_MSG_UNAVAILABLE
+
+        self.error_print("Error occurred.", e)
+
         try:
-            if e.args:
+            if hasattr(e, "args"):
                 if len(e.args) > 1:
                     error_code = e.args[0]
                     error_msg = e.args[1]
                 elif len(e.args) == 1:
-                    error_code = ERROR_CODE_MSG
                     error_msg = e.args[0]
-            else:
-                error_code = ERROR_CODE_MSG
-                error_msg = ERROR_MSG_UNAVAILABLE
-        except Exception:
-            error_code = ERROR_CODE_MSG
-            error_msg = ERROR_MSG_UNAVAILABLE
+        except Exception as e:
+            self.error_print("Error occurred while fetching exception information. Details: {}".format(str(e)))
 
-        try:
-            if error_code in ERROR_CODE_MSG:
-                error_text = 'Error Message: {0}'.format(error_msg)
-            else:
-                error_text = 'Error Code: {0}. Error Message: {1}'.format(error_code, error_msg)
-        except Exception:
-            self.debug_print('Error occurred while parsing the error message')
-            error_text = PARSE_ERROR_MSG
+        if not error_code:
+            error_text = "Error Message: {}".format(error_msg)
+        else:
+            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_msg)
 
         return error_text
 
@@ -184,15 +181,11 @@ class ZoomConnector(BaseConnector):
                             url,
                             timeout=DEFAULT_TIMEOUT,
                             **kwargs)
-            if int(r.status_code) != 204:
+            if r.status_code != 204:
                 resp_json = r.json()
-                if resp_json.get('code', 401) == 124 and (resp_json.get("message", "") == "Invalid access token." or resp_json.get("message", "") == "Access token is expired."):  # noqa: E501
+                if resp_json.get('code', 401) == 124 and (resp_json.get("message", "") in INVALID_TOKEN_MSG_LIST):  # noqa: E501
                     self._get_token(config)
-                    headers = {
-                        'Authorization': 'Bearer {}'.format(self.token),
-                        'content-type': 'application/json'
-                    }
-                    kwargs['headers'] = headers
+                    kwargs['headers']['Authorization'] = 'Bearer {}'.format(self.token)
                     r = request_func(
                                 url,
                                 timeout=DEFAULT_TIMEOUT,
@@ -483,7 +476,7 @@ class ZoomConnector(BaseConnector):
             "account_id": config["account_id"]
         }
         try:
-            response = requests.post("https://zoom.us/oauth/token", params=params, headers=headers)  # nosemgrep
+            response = requests.post(GET_TOKEN_URL, params=params, headers=headers)  # nosemgrep
         except Exception:
             self.debug_print("Error in connecting to the server")
             self.token = None
@@ -537,7 +530,7 @@ class ZoomConnector(BaseConnector):
 
         # Get the asset config
         config = self.get_config()
-        self.token = self._state.get("token", None)
+        self.token = self._state.get("token")
         self._base_url = config['base_url'].rstrip('/')
         if self.token:
             try:
@@ -551,7 +544,7 @@ class ZoomConnector(BaseConnector):
     def finalize(self):
 
         # Save the state, this data is saved across actions and app upgrades
-        if self.token is not None:
+        if self.token:
             self._state["token"] = encryption_helper.encrypt(self.token, self.get_asset_id())
         self.save_state(self._state)
         return phantom.APP_SUCCESS

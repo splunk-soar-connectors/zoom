@@ -16,3 +16,6 @@ ERROR_CODE_MSG = 'Error code unavailable'
 ERROR_MSG_UNAVAILABLE = 'Error message unavailable. Please check the asset configuration and|or action parameters'
 PARSE_ERROR_MSG = 'Unable to parse the error message. Please check the asset configuration and|or action parameters'
 DEFAULT_TIMEOUT = 30  # seconds
+GET_TOKEN_URL = "https://zoom.us/oauth/token"
+INVALID_TOKEN_MSG_LIST = ["Invalid access token.", "Access token is expired."]
+ERROR_MSG_UNAVAILABLE = "Error message unavailable. Please check the asset configuration and|or action parameters"
