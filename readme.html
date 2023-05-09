@@ -21,7 +21,7 @@
     </ul>
 
     <h3>App Configuration (Splunk> SOAR Side)</h3>
-    <p>The configuration of the Zoom App for Splunk> SOAR requires three fields account id, client id and client secret which are provided by Zoom. The third fourth is the "Base URL" field which is simply the base URL for the Zoom REST API. The default value provided, "https://api.zoom/us/v2" should not need to be changed.
+    <p>The configuration of the Zoom App for Splunk> SOAR requires three fields account id, client id and client secret which are provided by Zoom. The fourth is the "Base URL" field which is simply the base URL for the Zoom REST API. The default value provided, "https://api.zoom/us/v2" should not need to be changed.
 
     <h3>Actions</h3>
     <p>Actions are all fairly simple and documented with the normal app documentation process. That said, one of the main purposes of this app was to provide additional context about meetings that can only be provided via the Zoom API, most notably whether or not the meetings are being password protected.</p>
@@ -31,11 +31,19 @@
     <h2>Playbook Backward Compatibility</h2>
     <p>
       <ul>
-        <li>The old parameters have been added and . Hence, it is requested to update existing playbooks created in the earlier versions of the app by re-inserting | modifying | deleting the corresponding action blocks.</li>
+        <li>The new parameters have been added and old parameters have been removed in the asset configuration. Hence, it is requested to update existing playbooks created in the earlier versions of the app by re-inserting | modifying | deleting the corresponding action blocks.</li></br>
+        <li>For version 3.0.0 :</li>
         <ul>
-          <li>Account Id</li>
-          <li>Client Id</li>
-          <li>Client Secret</li>
+          <li>"Account Id" has been added</li>
+          <li>"Client Id" has been added</li>
+          <li>"Client Secret" has been added</li>
+          <li>"Api Id" has been removed</li>
+          <li>"Api Secret" has been removed</li>
+        </ul></br>
+        <li>For version 2.x.x :</li>
+        <ul>
+          <li>Api Id</li>
+          <li>Api Secret</li>
         </ul>
       </ul>
     </p>
