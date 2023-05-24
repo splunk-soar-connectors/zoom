@@ -16,9 +16,11 @@
 #
 # Phantom App imports
 import json
+from datetime import datetime, timedelta
 from urllib.parse import unquote
 
 import encryption_helper
+import jwt
 import phantom.app as phantom
 import requests
 from bs4 import BeautifulSoup, UnicodeDammit
@@ -152,15 +154,35 @@ class ZoomConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
+    def _get_jwt(self, config):
+        payload = {
+            'iss': self._api_key,
+            'exp': datetime.now() + timedelta(hours=8)
+        }
+
+        token = jwt.encode(payload, self._api_secret)
+
+        return token
+
     def _make_rest_call(self, endpoint, action_result, method='get', **kwargs):
         # **kwargs can be any additional parameters that requests.request accepts
 
         config = self.get_config()
+        if self._auth_method == "JWT" and (not self._api_key or not self._api_secret):
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Api key or Api secret not found"), None)
 
-        headers = {
-            'Authorization': 'Bearer {}'.format(self._token),
-            'content-type': 'application/json',
-        }
+        if self._auth_method == "JWT":
+            token = self._get_jwt(config)
+            headers = {
+                'Authorization': 'bearer {}'.format(token),
+                'User-Agent': 'Zoom-Jwt-Request',
+                'content-type': 'application/json'
+            }
+        else:
+            headers = {
+                'Authorization': 'Bearer {}'.format(self._token),
+                'content-type': 'application/json',
+            }
 
         kwargs['headers'] = headers
 
@@ -466,7 +488,9 @@ class ZoomConnector(BaseConnector):
             self.debug_print("Error in connecting to the server")
             self._token = None
             return
+        self.debug_print(f"response {response.text}")
         self._token = json.loads(response.text).get("access_token", None)
+        self.debug_print(f"token generated {self._token}")
 
     def handle_action(self, param):
 
@@ -513,25 +537,31 @@ class ZoomConnector(BaseConnector):
 
         # Get the asset config
         config = self.get_config()
-        self.client_id = config["client_id"]
-        self.client_secret = config["client_secret"]
+        self.client_id = config.get("client_id")
+        self.client_secret = config.get("client_secret")
         self._token = self._state.get("token")
         self._base_url = config['base_url'].rstrip('/')
-        if self._token:
-            try:
-                self._token = encryption_helper.decrypt(self._token, self.get_asset_id())
-            except Exception:
-                self._token = None
-                self.save_progress("error in decrypting token")
-        if self.get_action_identifier() == "test_connectivity" or not self._token:
-            self._get_token(config)
+        self._auth_method = config['auth_method']
+        self._api_key = config.get("api_key")
+        self._api_secret = config.get("api_secret")
+
+        if self._auth_method == "Server-to-Server Oauth":
+            if self._token:
+                try:
+                    self._token = encryption_helper.decrypt(self._token, self.get_asset_id())
+                except Exception:
+                    self._token = None
+                    self.save_progress("error in decrypting token")
+            if self.get_action_identifier() == "test_connectivity" or not self._token:
+                self.debug_print("get token called")
+                self._get_token(config)
         return phantom.APP_SUCCESS
 
     def finalize(self):
 
         # Save the state, this data is saved across actions and app upgrades
         self._state["token"] = self._token
-        if self._token:
+        if self._auth_method == "Server-to-Server Oauth" and self._token:
             try:
                 self._state["token"] = encryption_helper.encrypt(self._token, self.get_asset_id())
             except Exception:
