@@ -203,7 +203,7 @@ class ZoomConnector(BaseConnector):
                             url,
                             timeout=DEFAULT_TIMEOUT,
                             **kwargs)
-            if r.status_code != requests.codes.no_content:
+            if r.status_code != requests.codes.no_content and self._auth_method == SERVER_TO_SERVER_OAUTH_METHOD:
                 resp_json = r.json()
                 if resp_json.get('code') == 124 and (resp_json.get("message", "") in INVALID_TOKEN_MSG_LIST):
                     self._get_token(config)
