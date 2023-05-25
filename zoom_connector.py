@@ -530,6 +530,9 @@ class ZoomConnector(BaseConnector):
 
         # Load the state
         self._state = self.load_state()
+        if not isinstance(self._state, dict):
+            self.debug_print("Resetting the state file with the default format")
+            self._state = {"app_version": self.get_app_json().get("app_version")}
 
         # Get the asset config
         config = self.get_config()
