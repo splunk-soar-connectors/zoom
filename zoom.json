@@ -29,21 +29,6 @@
             "default": "https://api.zoom.us/v2",
             "order": 0
         },
-        "account_id": {
-            "description": "Account ID",
-            "data_type": "string",
-            "order": 1
-        },
-        "client_id": {
-            "description": "Client ID",
-            "data_type": "string",
-            "order": 2
-        },
-        "client_secret": {
-            "description": "Client Secret",
-            "data_type": "password",
-            "order": 3
-        },
         "auth_method": {
             "description": "Auth method",
             "data_type": "string",
@@ -52,17 +37,33 @@
                 "JWT",
                 "Server-to-Server Oauth"
             ],
-            "default": "JWT"
+            "default": "JWT",
+            "order": 1
+        },
+        "account_id": {
+            "description": "Account ID",
+            "data_type": "string",
+            "order": 2
+        },
+        "client_id": {
+            "description": "Client ID",
+            "data_type": "string",
+            "order": 3
+        },
+        "client_secret": {
+            "description": "Client Secret",
+            "data_type": "password",
+            "order": 4
         },
         "api_key": {
             "description": "API Key",
             "data_type": "password",
-            "order": 4
+            "order": 5
         },
         "api_secret": {
             "description": "API Secret",
             "data_type": "password",
-            "order": 5
+            "order": 6
         }
     },
     "pip_dependencies": {

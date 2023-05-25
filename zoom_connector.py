@@ -231,7 +231,7 @@ class ZoomConnector(BaseConnector):
         ret_val, _ = self._make_rest_call('/users', action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
-            self.save_progress('Test Connectivity Failed')
+            self.save_progress(TEST_CONNECTIVITY_FAILED)
             return action_result.get_status()
 
         self.save_progress('Test Connectivity Passed')
@@ -480,17 +480,15 @@ class ZoomConnector(BaseConnector):
     def _get_token(self, config):
         params = {
             "grant_type": "account_credentials",
-            "account_id": config["account_id"]
+            "account_id": self._account_id
         }
         try:
-            response = requests.post(GET_TOKEN_URL, params=params, auth=HTTPBasicAuth(self.client_id, self.client_secret))  # nosemgrep
+            response = requests.post(GET_TOKEN_URL, params=params, auth=HTTPBasicAuth(self._client_id, self._client_secret))  # nosemgrep
         except Exception:
             self.debug_print("Error in connecting to the server")
             self._token = None
             return
-        self.debug_print(f"response {response.text}")
-        self._token = json.loads(response.text).get("access_token", None)
-        self.debug_print(f"token generated {self._token}")
+        self._token = json.loads(response.text).get("access_token")
 
     def handle_action(self, param):
 
@@ -499,9 +497,7 @@ class ZoomConnector(BaseConnector):
         # Get the action that we are supposed to execute for this App Run
         action_id = self.get_action_identifier()
 
-        self.debug_print('action_id: {}'.format(self.get_action_identifier()))
-
-        if action_id == 'test_connectivity':
+        if action_id == TEST_CONNECTIVITY_IDENTIFIER:
             ret_val = self._handle_test_connectivity(param)
 
         elif action_id == 'get_user':
@@ -537,23 +533,34 @@ class ZoomConnector(BaseConnector):
 
         # Get the asset config
         config = self.get_config()
-        self.client_id = config.get("client_id")
-        self.client_secret = config.get("client_secret")
+        self._client_id = config.get("client_id")
+        self._client_secret = config.get("client_secret")
         self._token = self._state.get("token")
         self._base_url = config['base_url'].rstrip('/')
         self._auth_method = config['auth_method']
         self._api_key = config.get("api_key")
         self._api_secret = config.get("api_secret")
+        self._account_id = config.get("account_id")
 
-        if self._auth_method == "Server-to-Server Oauth":
+        if self._auth_method == SERVER_TO_SERVER_OAUTH_METHOD:
+            if not self._client_id or not self._client_secret or not self._account_id:
+                action_result = self.add_action_result(ActionResult(dict()))
+                message = "client id or client secret or account id not found."
+                if self.get_action_identifier() != TEST_CONNECTIVITY_IDENTIFIER:
+                    message += " Please re-run test connectivity first."
+                else:
+                    self.save_progress(TEST_CONNECTIVITY_FAILED)
+                return action_result.set_status(
+                    phantom.APP_ERROR, message
+                )
+
             if self._token:
                 try:
                     self._token = encryption_helper.decrypt(self._token, self.get_asset_id())
                 except Exception:
                     self._token = None
                     self.save_progress("error in decrypting token")
-            if self.get_action_identifier() == "test_connectivity" or not self._token:
-                self.debug_print("get token called")
+            if self.get_action_identifier() == TEST_CONNECTIVITY_IDENTIFIER or not self._token:
                 self._get_token(config)
         return phantom.APP_SUCCESS
 
@@ -561,7 +568,7 @@ class ZoomConnector(BaseConnector):
 
         # Save the state, this data is saved across actions and app upgrades
         self._state["token"] = self._token
-        if self._auth_method == "Server-to-Server Oauth" and self._token:
+        if self._auth_method == SERVER_TO_SERVER_OAUTH_METHOD and self._token:
             try:
                 self._state["token"] = encryption_helper.encrypt(self._token, self.get_asset_id())
             except Exception:
