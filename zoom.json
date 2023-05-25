@@ -11,7 +11,7 @@
     "product_version_regex": ".*",
     "publisher": "Splunk",
     "license": "Copyright (c) 2021-2023 Splunk Inc.",
-    "app_version": "3.0.0",
+    "app_version": "2.1.0",
     "utctime_updated": "2022-08-18T22:38:54.000000Z",
     "package_name": "phantom_zoom",
     "main_module": "zoom_connector.py",
@@ -41,27 +41,27 @@
             "order": 1
         },
         "account_id": {
-            "description": "Account ID",
+            "description": "Account ID (for Server-to-Server Oauth)",
             "data_type": "string",
             "order": 2
         },
         "client_id": {
-            "description": "Client ID",
+            "description": "Client ID (for Server-to-Server Oauth)",
             "data_type": "string",
             "order": 3
         },
         "client_secret": {
-            "description": "Client Secret",
+            "description": "Client Secret (for Server-to-Server Oauth)",
             "data_type": "password",
             "order": 4
         },
         "api_key": {
-            "description": "API Key",
+            "description": "API Key (for jwt)",
             "data_type": "password",
             "order": 5
         },
         "api_secret": {
-            "description": "API Secret",
+            "description": "API Secret (for jwt)",
             "data_type": "password",
             "order": 6
         }
