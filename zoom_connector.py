@@ -540,7 +540,7 @@ class ZoomConnector(BaseConnector):
         self._client_secret = config.get("client_secret")
         self._token = self._state.get("token")
         self._base_url = config['base_url'].rstrip('/')
-        self._auth_method = config['auth_method']
+        self._auth_method = config('auth_method', 'JWT')
         self._api_key = config.get("api_key")
         self._api_secret = config.get("api_secret")
         self._account_id = config.get("account_id")
