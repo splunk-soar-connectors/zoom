@@ -30,7 +30,7 @@
             "order": 0
         },
         "auth_method": {
-            "description": "Auth Type (Default: JWT)",
+            "description": "Auth Method (Default: JWT)",
             "data_type": "string",
             "value_list": [
                 "JWT",
