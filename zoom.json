@@ -19,7 +19,7 @@
     "fips_compliant": true,
     "app_wizard_version": "1.0.0",
     "latest_tested_versions": [
-        "Zoom Cloud 2023 on May 02, 2023"
+        "Zoom Cloud 2023 on June 14, 2023"
     ],
     "configuration": {
         "base_url": {
@@ -30,7 +30,7 @@
             "order": 0
         },
         "auth_method": {
-            "description": "Auth Method (Default: JWT)",
+            "description": "Auth Method",
             "data_type": "string",
             "value_list": [
                 "JWT",
@@ -39,28 +39,28 @@
             "default": "JWT",
             "order": 1
         },
-        "account_id": {
-            "description": "Account ID (for Server-to-Server OAuth)",
-            "data_type": "string",
-            "order": 2
-        },
-        "client_id": {
-            "description": "Client ID (for Server-to-Server OAuth)",
-            "data_type": "string",
-            "order": 3
-        },
-        "client_secret": {
-            "description": "Client Secret (for Server-to-Server OAuth)",
-            "data_type": "password",
-            "order": 4
-        },
         "api_key": {
             "description": "API Key (JWT)",
             "data_type": "password",
-            "order": 5
+            "order": 2
         },
         "api_secret": {
             "description": "API Secret (JWT)",
+            "data_type": "password",
+            "order": 3
+        },
+        "account_id": {
+            "description": "Account ID (Server-to-Server OAuth)",
+            "data_type": "string",
+            "order": 4
+        },
+        "client_id": {
+            "description": "Client ID (Server-to-Server OAuth)",
+            "data_type": "string",
+            "order": 5
+        },
+        "client_secret": {
+            "description": "Client Secret (Server-to-Server OAuth)",
             "data_type": "password",
             "order": 6
         }
