@@ -154,7 +154,7 @@ class ZoomConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
-    def _get_jwt(self, config):
+    def _get_jwt(self):
         payload = {
             'iss': self._api_key,
             'exp': datetime.now() + timedelta(hours=8)
@@ -164,28 +164,25 @@ class ZoomConnector(BaseConnector):
 
         return token
 
-    def _make_rest_call(self, endpoint, action_result, method='get', **kwargs):
+    def _make_rest_call(self, endpoint, action_result, method='get', new_token=False, **kwargs):
         # **kwargs can be any additional parameters that requests.request accepts
 
-        config = self.get_config()
-        if self._auth_method == "JWT" and (not self._api_key or not self._api_secret):
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Api key or Api secret not found"), None)
-
-        if self._auth_method == "JWT":
-            token = self._get_jwt(config)
+        if self._auth_method == JWT_STRING:
+            token = self._get_jwt()
             headers = {
-                'Authorization': 'bearer {}'.format(token),
+                'Authorization': BEARER_STRING.format(token),
                 'User-Agent': 'Zoom-Jwt-Request',
                 'content-type': 'application/json'
             }
         else:
             headers = {
-                'Authorization': 'Bearer {}'.format(self._token),
+                'Authorization': BEARER_STRING.format(self._token),
                 'content-type': 'application/json',
             }
 
+        if new_token:
+            headers = None
         kwargs['headers'] = headers
-
         resp_json = None
 
         try:
@@ -196,20 +193,22 @@ class ZoomConnector(BaseConnector):
             return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
 
         # Create a URL to connect to
-        url = '{}{}'.format(self._base_url, endpoint)
+        if not new_token:
+            url = '{}{}'.format(self._base_url, endpoint)
+        else:
+            url = endpoint
 
         try:
-            r = request_func(
-                            url,
+            r = request_func(url,
                             timeout=DEFAULT_TIMEOUT,
                             **kwargs)
             if r.status_code != requests.codes.no_content and self._auth_method == SERVER_TO_SERVER_OAUTH_METHOD:
                 resp_json = r.json()
                 if resp_json.get('code') == 124 and (resp_json.get("message", "") in INVALID_TOKEN_MSG_LIST):
-                    self._get_token(config)
-                    kwargs['headers']['Authorization'] = 'Bearer {}'.format(self._token)
-                    if not self._token:
-                        return RetVal(action_result.set_status(phantom.APP_ERROR, 'Invalid token, please rerun the test connectivity'), r)
+                    ret_val = self._get_token(action_result)
+                    if phantom.is_fail(ret_val):
+                        return RetVal(action_result.get_status(), resp_json)
+                    kwargs['headers']['Authorization'] = BEARER_STRING.format(self._token)
                     r = request_func(
                                 url,
                                 timeout=DEFAULT_TIMEOUT,
@@ -477,18 +476,16 @@ class ZoomConnector(BaseConnector):
         action_result.add_data(response)
         return action_result.set_status(phantom.APP_SUCCESS, 'Meeting information for id {} successfully retrieved'.format(meeting_id))
 
-    def _get_token(self, config):
+    def _get_token(self, action_result):
         params = {
             "grant_type": "account_credentials",
             "account_id": self._account_id
         }
-        try:
-            response = requests.post(GET_TOKEN_URL, params=params, auth=HTTPBasicAuth(self._client_id, self._client_secret))  # nosemgrep
-        except Exception:
-            self.debug_print("Error in connecting to the server")
-            self._token = None
-            return
-        self._token = json.loads(response.text).get("access_token")
+        ret_val, response = self._make_rest_call(GET_TOKEN_URL, action_result, method="post", new_token=True, auth=HTTPBasicAuth(self._client_id, self._client_secret), params=params)  # noqa E501
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
+        self._token = response.get("access_token")
+        return phantom.APP_SUCCESS
 
     def handle_action(self, param):
 
@@ -540,31 +537,31 @@ class ZoomConnector(BaseConnector):
         self._client_secret = config.get("client_secret")
         self._token = self._state.get("token")
         self._base_url = config['base_url'].rstrip('/')
-        self._auth_method = config.get('auth_method', 'JWT')
+        self._auth_method = config.get('auth_method', JWT_STRING)
         self._api_key = config.get("api_key")
         self._api_secret = config.get("api_secret")
         self._account_id = config.get("account_id")
 
         if self._auth_method == SERVER_TO_SERVER_OAUTH_METHOD:
-            if not self._client_id or not self._client_secret or not self._account_id:
-                action_result = self.add_action_result(ActionResult(dict()))
+            if not all([self._client_id, self._client_secret, self._account_id]):
                 message = "client id or client secret or account id not found."
-                if self.get_action_identifier() != TEST_CONNECTIVITY_IDENTIFIER:
-                    message += " Please re-run test connectivity first."
-                else:
-                    self.save_progress(TEST_CONNECTIVITY_FAILED)
-                return action_result.set_status(
+                return self.set_status(
                     phantom.APP_ERROR, message
                 )
-
             if self._token:
                 try:
                     self._token = encryption_helper.decrypt(self._token, self.get_asset_id())
                 except Exception:
                     self._token = None
-                    self.save_progress("error in decrypting token")
+                    self.save_progress("Error in decrypting token")
             if self.get_action_identifier() == TEST_CONNECTIVITY_IDENTIFIER or not self._token:
-                self._get_token(config)
+                ret_val = self._get_token(self)
+                if phantom.is_fail(ret_val):
+                    self.save_progress(TEST_CONNECTIVITY_FAILED)
+                    return self.get_status()
+        if self._auth_method == JWT_STRING and not all([self._api_key, self._api_secret]):
+            return self.set_status(phantom.APP_ERROR, "Api key or Api secret not found")
+
         return phantom.APP_SUCCESS
 
     def finalize(self):

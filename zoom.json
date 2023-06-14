@@ -34,33 +34,33 @@
             "data_type": "string",
             "value_list": [
                 "JWT",
-                "Server-to-Server Oauth"
+                "Server-to-Server OAuth"
             ],
             "default": "JWT",
             "order": 1
         },
         "account_id": {
-            "description": "Account ID (for Server-to-Server Oauth)",
+            "description": "Account ID (for Server-to-Server OAuth)",
             "data_type": "string",
             "order": 2
         },
         "client_id": {
-            "description": "Client ID (for Server-to-Server Oauth)",
+            "description": "Client ID (for Server-to-Server OAuth)",
             "data_type": "string",
             "order": 3
         },
         "client_secret": {
-            "description": "Client Secret (for Server-to-Server Oauth)",
+            "description": "Client Secret (for Server-to-Server OAuth)",
             "data_type": "password",
             "order": 4
         },
         "api_key": {
-            "description": "API Key (for JWT)",
+            "description": "API Key (JWT)",
             "data_type": "password",
             "order": 5
         },
         "api_secret": {
-            "description": "API Secret (for JWT)",
+            "description": "API Secret (JWT)",
             "data_type": "password",
             "order": 6
         }
@@ -971,7 +971,7 @@
                     "data_path": "action_result.data.*.custom_attributes.*.key",
                     "data_type": "string",
                     "example_values": [
-                        "cbf_{0}&&&&cbf_p9y_qhefsveacfrdepuvzw"
+                        "examplecbf_{0}&&&&cbf_p9y_qhefsveacfrdepuvzw"
                     ]
                 },
                 {
@@ -1236,7 +1236,7 @@
                     "data_path": "action_result.parameter.password",
                     "data_type": "string",
                     "example_values": [
-                        "TestPass1"
+                        "testPass1"
                     ]
                 },
                 {
@@ -1514,7 +1514,7 @@
                     "data_path": "action_result.summary.password",
                     "data_type": "string",
                     "example_values": [
-                        "xFghbsuHndTYGF"
+                        "testxFghbsuHndTYGF"
                     ]
                 },
                 {
@@ -2038,7 +2038,7 @@
                     "data_path": "action_result.parameter.password",
                     "data_type": "string",
                     "example_values": [
-                        "TestPass1"
+                        "testPass1"
                     ]
                 },
                 {
@@ -2064,7 +2064,7 @@
                     "data_path": "action_result.summary.password",
                     "data_type": "string",
                     "example_values": [
-                        "xFghbsuHndTYGF"
+                        "testxFghbsuHndTYGF"
                     ]
                 },
                 {
@@ -2276,7 +2276,7 @@
                     "data_path": "action_result.parameter.pmi_password",
                     "data_type": "string",
                     "example_values": [
-                        "Test@123"
+                        "test@123"
                     ]
                 },
                 {
