@@ -2,11 +2,11 @@
 # Zoom
 
 Publisher: Splunk  
-Connector Version: 2\.0\.2  
+Connector Version: 2.1.0  
 Product Vendor: Zoom  
 Product Name: Zoom Meetings  
-Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 5\.3\.0  
+Product Version Supported (regex): ".\*"  
+Minimum Product Version: 6.0.0  
 
 The app integrates with Zoom Meetings API to perform investigative and generic actions
 
@@ -37,18 +37,43 @@ regard to Zoom meetings.
 
 ### App Configurations (Zoom Side)
 
-For the Zoom app for Phantom to be configured correctly, you must first create a JWT App in your
+#### For JWT Authentication
+
+For the Zoom app for Splunk SOAR to be configured correctly, you must first create a JWT App in your
 Zoom App Marketplace account. A JWT App can be created by going
 [here](https://marketplace.zoom.us/develop/create) and clicking the "Create" button under the "JWT"
 app type. Once you've created your JWT app you'll be provided with an API Key and an API Secret,
-keep track of these. They will be necessary for the configuration on the Phantom side.
+keep track of these. They will be necessary for the configuration on the Splunk SOAR side.
 
-### App Configuration (Splunk> Phantom Side)
+#### For Server-to-Server OAuth Authentication
 
-The configuration of the Zoom App for Splunk> Phantom requires three fields API Key and API Secret
-which are provided by Zoom. The third field is the "Base URL" field which is simply the base URL for
-the Zoom REST API. The default value provided, "https://api.zoom/us/v2" should not need to be
-changed.
+For the Zoom app for SOAR to be configured correctly, you must first create a Server-to-Server OAuth
+app in your Zoom App Marketplace account. A Server-to-Server OAuth App can be created by going
+[here](https://developers.zoom.us/docs/internal-apps/) and clicking the "Create" button under the
+"Server-to-Server OAuth" app type. Once you've created your Server-to-Server OAuth app you'll be
+provided with an account id, client id and client secret, keep track of these. They will be
+necessary for the configuration on the SOAR side. To ensure that all actions are executed properly,
+you must include the following scopes in the Server-to-Server OAuth app.
+
+-   user:read:admin
+-   user:write:admin
+-   meeting:read:admin
+-   meeting:write:admin
+
+We recommend you to use the Server-to-Server OAuth authentication because in short time JWT
+authentication will be deprecated from
+[zoom](https://developers.zoom.us/docs/internal-apps/jwt-faq/) platform.
+
+### App Configuration (Splunk> SOAR Side)
+
+For Server-to-Server OAuth configuration of the Zoom App for Splunk> SOAR requires three fields
+account id, client id and client secret which are provided by Zoom.
+
+For JWT authentication configuration of the Zoom App for Splunk> SOAR requires two fields API Key
+and API Secret which are provided by Zoom.
+
+The last field is the "Base URL" field which is simply the base URL for the Zoom REST API. The
+default value provided, "https://api.zoom/us/v2" should not need to be changed.
 
 ### Actions
 
@@ -67,9 +92,13 @@ The below configuration variables are required for this Connector to operate.  T
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
-**base\_url** |  required  | string | Base URL \(e\.g\. https\://api\.zoom\.us/v2\)
-**api\_key** |  required  | password | API Key
-**api\_secret** |  required  | password | API Secret
+**base_url** |  required  | string | Base URL (e.g. https://api.zoom.us/v2)
+**auth_method** |  optional  | string | Auth Method
+**api_key** |  optional  | password | API Key (JWT)
+**api_secret** |  optional  | password | API Secret (JWT)
+**account_id** |  optional  | string | Account ID (Server-to-Server OAuth)
+**client_id** |  optional  | string | Client ID (Server-to-Server OAuth)
+**client_secret** |  optional  | password | Client Secret (Server-to-Server OAuth)
 
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration  
@@ -103,23 +132,23 @@ Read only: **True**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**meeting\_id** |  required  | Zoom meeting ID | string |  `zoom meeting id` 
+**meeting_id** |  required  | Zoom meeting ID | string |  `zoom meeting id` 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.meeting\_id | string |  `zoom meeting id` 
-action\_result\.data\.\*\.invitation | string | 
-action\_result\.data\.\*\.parsed\_fields\.invitation\_link | string | 
-action\_result\.data\.\*\.parsed\_fields\.meeting\_id | string | 
-action\_result\.data\.\*\.parsed\_fields\.passcode | string | 
-action\_result\.data\.\*\.parsed\_fields\.time | string | 
-action\_result\.data\.\*\.parsed\_fields\.topic | string | 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.meeting_id | string |  `zoom meeting id`  |   92512345678 
+action_result.data.\*.invitation | string |  |  
+action_result.data.\*.parsed_fields.invitation_link | string |  `url`  |  
+action_result.data.\*.parsed_fields.meeting_id | string |  |  
+action_result.data.\*.parsed_fields.passcode | string |  |  
+action_result.data.\*.parsed_fields.time | string |  |  
+action_result.data.\*.parsed_fields.topic | string |  |  
+action_result.summary | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'get user settings'
 Get zoom user settings
@@ -130,135 +159,157 @@ Read only: **True**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**user\_id** |  required  | Zoom user ID | string |  `zoom user id` 
+**user_id** |  required  | Zoom user ID | string |  `zoom user id` 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.user\_id | string |  `zoom user id` 
-action\_result\.data\.\*\.audio\_conferencing\.toll\_free\_and\_fee\_based\_toll\_call\.enable | boolean | 
-action\_result\.data\.\*\.email\_notification\.alternative\_host\_reminder | boolean | 
-action\_result\.data\.\*\.email\_notification\.cancel\_meeting\_reminder | boolean | 
-action\_result\.data\.\*\.email\_notification\.jbh\_reminder | boolean | 
-action\_result\.data\.\*\.email\_notification\.schedule\_for\_reminder | boolean | 
-action\_result\.data\.\*\.feature\.cn\_meeting | boolean | 
-action\_result\.data\.\*\.feature\.in\_meeting | boolean | 
-action\_result\.data\.\*\.feature\.large\_meeting | boolean | 
-action\_result\.data\.\*\.feature\.large\_meeting\_capacity | numeric | 
-action\_result\.data\.\*\.feature\.meeting\_capacity | numeric | 
-action\_result\.data\.\*\.feature\.webinar | boolean | 
-action\_result\.data\.\*\.feature\.webinar\_capacity | numeric | 
-action\_result\.data\.\*\.feature\.zoom\_events | boolean | 
-action\_result\.data\.\*\.feature\.zoom\_iq\_for\_sales | boolean | 
-action\_result\.data\.\*\.feature\.zoom\_phone | boolean | 
-action\_result\.data\.\*\.in\_meeting\.allow\_live\_streaming | boolean | 
-action\_result\.data\.\*\.in\_meeting\.allow\_participants\_chat\_with | numeric | 
-action\_result\.data\.\*\.in\_meeting\.allow\_participants\_to\_rename | boolean | 
-action\_result\.data\.\*\.in\_meeting\.allow\_show\_zoom\_windows | boolean | 
-action\_result\.data\.\*\.in\_meeting\.allow\_users\_save\_chats | numeric | 
-action\_result\.data\.\*\.in\_meeting\.annotation | boolean | 
-action\_result\.data\.\*\.in\_meeting\.attendee\_on\_hold | boolean | 
-action\_result\.data\.\*\.in\_meeting\.attention\_mode\_focus\_mode | boolean | 
-action\_result\.data\.\*\.in\_meeting\.auto\_answer | boolean | 
-action\_result\.data\.\*\.in\_meeting\.auto\_saving\_chat | boolean | 
-action\_result\.data\.\*\.in\_meeting\.breakout\_room | boolean | 
-action\_result\.data\.\*\.in\_meeting\.chat | boolean | 
-action\_result\.data\.\*\.in\_meeting\.closed\_caption | boolean | 
-action\_result\.data\.\*\.in\_meeting\.closed\_captioning\.enable | boolean | 
-action\_result\.data\.\*\.in\_meeting\.closed\_captioning\.save\_caption | boolean | 
-action\_result\.data\.\*\.in\_meeting\.co\_host | boolean | 
-action\_result\.data\.\*\.in\_meeting\.custom\_live\_streaming\_service | boolean | 
-action\_result\.data\.\*\.in\_meeting\.custom\_service\_instructions | string | 
-action\_result\.data\.\*\.in\_meeting\.disable\_screen\_sharing\_for\_host\_meetings | boolean | 
-action\_result\.data\.\*\.in\_meeting\.disable\_screen\_sharing\_for\_in\_meeting\_guests | boolean | 
-action\_result\.data\.\*\.in\_meeting\.e2e\_encryption | boolean | 
-action\_result\.data\.\*\.in\_meeting\.entry\_exit\_chime | string | 
-action\_result\.data\.\*\.in\_meeting\.far\_end\_camera\_control | boolean | 
-action\_result\.data\.\*\.in\_meeting\.feedback | boolean | 
-action\_result\.data\.\*\.in\_meeting\.file\_transfer | boolean | 
-action\_result\.data\.\*\.in\_meeting\.group\_hd | boolean | 
-action\_result\.data\.\*\.in\_meeting\.manual\_captioning\.auto\_generated\_captions | boolean | 
-action\_result\.data\.\*\.in\_meeting\.manual\_captioning\.full\_transcript | boolean | 
-action\_result\.data\.\*\.in\_meeting\.manual\_captioning\.manual\_captions | boolean | 
-action\_result\.data\.\*\.in\_meeting\.manual\_captioning\.save\_captions | boolean | 
-action\_result\.data\.\*\.in\_meeting\.meeting\_polling\.enable | boolean | 
-action\_result\.data\.\*\.in\_meeting\.meeting\_reactions | boolean | 
-action\_result\.data\.\*\.in\_meeting\.non\_verbal\_feedback | boolean | 
-action\_result\.data\.\*\.in\_meeting\.polling | boolean | 
-action\_result\.data\.\*\.in\_meeting\.private\_chat | boolean | 
-action\_result\.data\.\*\.in\_meeting\.record\_play\_voice | boolean | 
-action\_result\.data\.\*\.in\_meeting\.remote\_control | boolean | 
-action\_result\.data\.\*\.in\_meeting\.remote\_support | boolean | 
-action\_result\.data\.\*\.in\_meeting\.request\_permission\_to\_unmute\_participants | boolean | 
-action\_result\.data\.\*\.in\_meeting\.screen\_sharing | boolean | 
-action\_result\.data\.\*\.in\_meeting\.share\_dual\_camera | boolean | 
-action\_result\.data\.\*\.in\_meeting\.show\_a\_join\_from\_your\_browser\_link | boolean | 
-action\_result\.data\.\*\.in\_meeting\.show\_meeting\_control\_toolbar | boolean | 
-action\_result\.data\.\*\.in\_meeting\.slide\_control | boolean | 
-action\_result\.data\.\*\.in\_meeting\.virtual\_background | boolean | 
-action\_result\.data\.\*\.in\_meeting\.virtual\_background\_settings\.allow\_upload\_custom | boolean | 
-action\_result\.data\.\*\.in\_meeting\.virtual\_background\_settings\.allow\_videos | boolean | 
-action\_result\.data\.\*\.in\_meeting\.virtual\_background\_settings\.enable | boolean | 
-action\_result\.data\.\*\.in\_meeting\.waiting\_room | boolean | 
-action\_result\.data\.\*\.in\_meeting\.webinar\_polling\.enable | boolean | 
-action\_result\.data\.\*\.in\_meeting\.who\_can\_share\_screen | string | 
-action\_result\.data\.\*\.in\_meeting\.who\_can\_share\_screen\_when\_someone\_is\_sharing | string | 
-action\_result\.data\.\*\.in\_meeting\.workplace\_by\_facebook | boolean | 
-action\_result\.data\.\*\.integration\.linkedin\_sales\_navigator | boolean | 
-action\_result\.data\.\*\.recording\.auto\_delete\_cmr | boolean | 
-action\_result\.data\.\*\.recording\.auto\_delete\_cmr\_days | numeric | 
-action\_result\.data\.\*\.recording\.auto\_recording | string | 
-action\_result\.data\.\*\.recording\.cloud\_recording | boolean | 
-action\_result\.data\.\*\.recording\.host\_pause\_stop\_recording | boolean | 
-action\_result\.data\.\*\.recording\.local\_recording | boolean | 
-action\_result\.data\.\*\.recording\.record\_audio\_file | boolean | 
-action\_result\.data\.\*\.recording\.record\_gallery\_view | boolean | 
-action\_result\.data\.\*\.recording\.record\_speaker\_view | boolean | 
-action\_result\.data\.\*\.recording\.recording\_audio\_transcript | boolean | 
-action\_result\.data\.\*\.recording\.recording\_disclaimer | boolean | 
-action\_result\.data\.\*\.recording\.recording\_password\_requirement\.have\_letter | boolean | 
-action\_result\.data\.\*\.recording\.recording\_password\_requirement\.have\_number | boolean | 
-action\_result\.data\.\*\.recording\.recording\_password\_requirement\.have\_special\_character | boolean | 
-action\_result\.data\.\*\.recording\.recording\_password\_requirement\.length | numeric | 
-action\_result\.data\.\*\.recording\.recording\_password\_requirement\.only\_allow\_numeric | boolean | 
-action\_result\.data\.\*\.recording\.save\_chat\_text | boolean | 
-action\_result\.data\.\*\.recording\.show\_timestamp | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.audio\_type | string | 
-action\_result\.data\.\*\.schedule\_meeting\.default\_password\_for\_scheduled\_meetings | string | 
-action\_result\.data\.\*\.schedule\_meeting\.embed\_password\_in\_join\_link | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.force\_pmi\_jbh\_password | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.host\_video | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.join\_before\_host | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.meeting\_password\_requirement\.consecutive\_characters\_length | numeric | 
-action\_result\.data\.\*\.schedule\_meeting\.meeting\_password\_requirement\.have\_letter | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.meeting\_password\_requirement\.have\_number | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.meeting\_password\_requirement\.have\_special\_character | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.meeting\_password\_requirement\.have\_upper\_and\_lower\_characters | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.meeting\_password\_requirement\.length | numeric | 
-action\_result\.data\.\*\.schedule\_meeting\.meeting\_password\_requirement\.only\_allow\_numeric | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.meeting\_password\_requirement\.weak\_enhance\_detection | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.mute\_upon\_entry | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.participants\_video | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.personal\_meeting | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.pmi\_password | string | 
-action\_result\.data\.\*\.schedule\_meeting\.pstn\_password\_protected | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.require\_password\_for\_instant\_meetings | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.require\_password\_for\_pmi\_meetings | string | 
-action\_result\.data\.\*\.schedule\_meeting\.require\_password\_for\_scheduled\_meetings | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.require\_password\_for\_scheduling\_new\_meetings | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.use\_pmi\_for\_instant\_meetings | boolean | 
-action\_result\.data\.\*\.schedule\_meeting\.use\_pmi\_for\_scheduled\_meetings | boolean | 
-action\_result\.data\.\*\.telephony\.audio\_conference\_info | string | 
-action\_result\.data\.\*\.telephony\.show\_international\_numbers\_link | boolean | 
-action\_result\.data\.\*\.telephony\.third\_party\_audio | boolean | 
-action\_result\.data\.\*\.tsp\.call\_out | boolean | 
-action\_result\.data\.\*\.tsp\.call\_out\_countries | string | 
-action\_result\.data\.\*\.tsp\.show\_international\_numbers\_link | boolean | 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.user_id | string |  `zoom user id`  |   A0BiCtoDEFGHIzYaZcLdsA 
+action_result.data.\*.audio_conferencing.toll_free_and_fee_based_toll_call.enable | boolean |  |  
+action_result.data.\*.email_notification.alternative_host_reminder | boolean |  |  
+action_result.data.\*.email_notification.cancel_meeting_reminder | boolean |  |  
+action_result.data.\*.email_notification.jbh_reminder | boolean |  |  
+action_result.data.\*.email_notification.schedule_for_reminder | boolean |  |  
+action_result.data.\*.feature.cn_meeting | boolean |  |  
+action_result.data.\*.feature.in_meeting | boolean |  |  
+action_result.data.\*.feature.large_meeting | boolean |  |  
+action_result.data.\*.feature.large_meeting_capacity | numeric |  |  
+action_result.data.\*.feature.meeting_capacity | numeric |  |  
+action_result.data.\*.feature.webinar | boolean |  |  
+action_result.data.\*.feature.webinar_capacity | numeric |  |  
+action_result.data.\*.feature.zoom_customer_managed_key | boolean |  |   True  False 
+action_result.data.\*.feature.zoom_events | boolean |  |  
+action_result.data.\*.feature.zoom_events_consumption | string |  |   None 
+action_result.data.\*.feature.zoom_events_saas | boolean |  |   True  False 
+action_result.data.\*.feature.zoom_huddles | boolean |  |   True  False 
+action_result.data.\*.feature.zoom_iq_for_sales | boolean |  |  
+action_result.data.\*.feature.zoom_phone | boolean |  |  
+action_result.data.\*.feature.zoom_quality_management | boolean |  |   True  False 
+action_result.data.\*.feature.zoom_spots | boolean |  |   True  False 
+action_result.data.\*.feature.zoom_translated_captions | boolean |  |   True  False 
+action_result.data.\*.feature.zoom_whiteboard | boolean |  |   True  False 
+action_result.data.\*.feature.zoom_whiteboard_plus | boolean |  |   True  False 
+action_result.data.\*.feature.zoom_workforce_management | boolean |  |   True  False 
+action_result.data.\*.in_meeting.allow_live_streaming | boolean |  |  
+action_result.data.\*.in_meeting.allow_participants_chat_with | numeric |  |  
+action_result.data.\*.in_meeting.allow_participants_to_rename | boolean |  |  
+action_result.data.\*.in_meeting.allow_show_zoom_windows | boolean |  |  
+action_result.data.\*.in_meeting.allow_users_save_chats | numeric |  |  
+action_result.data.\*.in_meeting.allow_users_to_delete_messages_in_meeting_chat | boolean |  |   True  False 
+action_result.data.\*.in_meeting.annotation | boolean |  |  
+action_result.data.\*.in_meeting.attendee_on_hold | boolean |  |  
+action_result.data.\*.in_meeting.attention_mode_focus_mode | boolean |  |  
+action_result.data.\*.in_meeting.auto_answer | boolean |  |  
+action_result.data.\*.in_meeting.auto_saving_chat | boolean |  |  
+action_result.data.\*.in_meeting.breakout_room | boolean |  |  
+action_result.data.\*.in_meeting.chat | boolean |  |  
+action_result.data.\*.in_meeting.closed_caption | boolean |  |  
+action_result.data.\*.in_meeting.closed_captioning.auto_transcribing | boolean |  |   True  False 
+action_result.data.\*.in_meeting.closed_captioning.enable | boolean |  |  
+action_result.data.\*.in_meeting.closed_captioning.save_caption | boolean |  |  
+action_result.data.\*.in_meeting.closed_captioning.third_party_captioning_service | boolean |  |   True  False 
+action_result.data.\*.in_meeting.closed_captioning.view_full_transcript | boolean |  |   True  False 
+action_result.data.\*.in_meeting.co_host | boolean |  |  
+action_result.data.\*.in_meeting.custom_live_streaming_service | boolean |  |  
+action_result.data.\*.in_meeting.custom_service_instructions | string |  |  
+action_result.data.\*.in_meeting.disable_screen_sharing_for_host_meetings | boolean |  |  
+action_result.data.\*.in_meeting.disable_screen_sharing_for_in_meeting_guests | boolean |  |  
+action_result.data.\*.in_meeting.e2e_encryption | boolean |  |  
+action_result.data.\*.in_meeting.entry_exit_chime | string |  |  
+action_result.data.\*.in_meeting.far_end_camera_control | boolean |  |  
+action_result.data.\*.in_meeting.feedback | boolean |  |  
+action_result.data.\*.in_meeting.file_transfer | boolean |  |  
+action_result.data.\*.in_meeting.group_hd | boolean |  |  
+action_result.data.\*.in_meeting.manual_captioning.auto_generated_captions | boolean |  |  
+action_result.data.\*.in_meeting.manual_captioning.full_transcript | boolean |  |  
+action_result.data.\*.in_meeting.manual_captioning.manual_captions | boolean |  |  
+action_result.data.\*.in_meeting.manual_captioning.save_captions | boolean |  |  
+action_result.data.\*.in_meeting.manual_captioning.third_party_captioning_service | boolean |  |   True  False 
+action_result.data.\*.in_meeting.meeting_polling.enable | boolean |  |  
+action_result.data.\*.in_meeting.meeting_reactions | boolean |  |  
+action_result.data.\*.in_meeting.meeting_reactions_emojis | string |  |   all 
+action_result.data.\*.in_meeting.non_verbal_feedback | boolean |  |  
+action_result.data.\*.in_meeting.participants_share_simultaneously | string |  |   one 
+action_result.data.\*.in_meeting.participants_to_place_in_waiting_room | numeric |  |  
+action_result.data.\*.in_meeting.polling | boolean |  |  
+action_result.data.\*.in_meeting.post_meeting_feedback | boolean |  |   True  False 
+action_result.data.\*.in_meeting.private_chat | boolean |  |  
+action_result.data.\*.in_meeting.record_play_voice | boolean |  |  
+action_result.data.\*.in_meeting.remote_control | boolean |  |  
+action_result.data.\*.in_meeting.remote_support | boolean |  |  
+action_result.data.\*.in_meeting.request_permission_to_unmute_participants | boolean |  |  
+action_result.data.\*.in_meeting.screen_sharing | boolean |  |  
+action_result.data.\*.in_meeting.share_dual_camera | boolean |  |  
+action_result.data.\*.in_meeting.show_a_join_from_your_browser_link | boolean |  |  
+action_result.data.\*.in_meeting.show_meeting_control_toolbar | boolean |  |  
+action_result.data.\*.in_meeting.sign_language_interpretation.enable | boolean |  |   True  False 
+action_result.data.\*.in_meeting.slide_control | boolean |  |  
+action_result.data.\*.in_meeting.transfer_meetings_between_devices | boolean |  |   True  False 
+action_result.data.\*.in_meeting.virtual_background | boolean |  |  
+action_result.data.\*.in_meeting.virtual_background_settings.allow_upload_custom | boolean |  |  
+action_result.data.\*.in_meeting.virtual_background_settings.allow_videos | boolean |  |  
+action_result.data.\*.in_meeting.virtual_background_settings.enable | boolean |  |  
+action_result.data.\*.in_meeting.waiting_room | boolean |  |  
+action_result.data.\*.in_meeting.webinar_polling.enable | boolean |  |  
+action_result.data.\*.in_meeting.whiteboard | boolean |  |   True  False 
+action_result.data.\*.in_meeting.who_can_share_screen | string |  |  
+action_result.data.\*.in_meeting.who_can_share_screen_when_someone_is_sharing | string |  |  
+action_result.data.\*.in_meeting.workplace_by_facebook | boolean |  |  
+action_result.data.\*.integration.linkedin_sales_navigator | boolean |  |  
+action_result.data.\*.recording.auto_delete_cmr | boolean |  |  
+action_result.data.\*.recording.auto_delete_cmr_days | numeric |  |  
+action_result.data.\*.recording.auto_recording | string |  |  
+action_result.data.\*.recording.cloud_recording | boolean |  |  
+action_result.data.\*.recording.host_pause_stop_recording | boolean |  |  
+action_result.data.\*.recording.local_recording | boolean |  |  
+action_result.data.\*.recording.record_audio_file | boolean |  |  
+action_result.data.\*.recording.record_gallery_view | boolean |  |  
+action_result.data.\*.recording.record_speaker_view | boolean |  |  
+action_result.data.\*.recording.recording_audio_transcript | boolean |  |  
+action_result.data.\*.recording.recording_disclaimer | boolean |  |  
+action_result.data.\*.recording.recording_password_requirement.have_letter | boolean |  |  
+action_result.data.\*.recording.recording_password_requirement.have_number | boolean |  |  
+action_result.data.\*.recording.recording_password_requirement.have_special_character | boolean |  |  
+action_result.data.\*.recording.recording_password_requirement.length | numeric |  |  
+action_result.data.\*.recording.recording_password_requirement.only_allow_numeric | boolean |  |  
+action_result.data.\*.recording.save_chat_text | boolean |  |  
+action_result.data.\*.recording.show_timestamp | boolean |  |  
+action_result.data.\*.schedule_meeting.audio_type | string |  |  
+action_result.data.\*.schedule_meeting.default_password_for_scheduled_meetings | string |  |  
+action_result.data.\*.schedule_meeting.embed_password_in_join_link | boolean |  |  
+action_result.data.\*.schedule_meeting.force_pmi_jbh_password | boolean |  |  
+action_result.data.\*.schedule_meeting.host_video | boolean |  |  
+action_result.data.\*.schedule_meeting.join_before_host | boolean |  |  
+action_result.data.\*.schedule_meeting.meeting_password_requirement.consecutive_characters_length | numeric |  |  
+action_result.data.\*.schedule_meeting.meeting_password_requirement.have_letter | boolean |  |  
+action_result.data.\*.schedule_meeting.meeting_password_requirement.have_number | boolean |  |  
+action_result.data.\*.schedule_meeting.meeting_password_requirement.have_special_character | boolean |  |  
+action_result.data.\*.schedule_meeting.meeting_password_requirement.have_upper_and_lower_characters | boolean |  |  
+action_result.data.\*.schedule_meeting.meeting_password_requirement.length | numeric |  |  
+action_result.data.\*.schedule_meeting.meeting_password_requirement.only_allow_numeric | boolean |  |  
+action_result.data.\*.schedule_meeting.meeting_password_requirement.weak_enhance_detection | boolean |  |  
+action_result.data.\*.schedule_meeting.mute_upon_entry | boolean |  |  
+action_result.data.\*.schedule_meeting.participants_video | boolean |  |  
+action_result.data.\*.schedule_meeting.personal_meeting | boolean |  |  
+action_result.data.\*.schedule_meeting.pmi_password | string |  |  
+action_result.data.\*.schedule_meeting.pstn_password_protected | boolean |  |  
+action_result.data.\*.schedule_meeting.require_password_for_instant_meetings | boolean |  |  
+action_result.data.\*.schedule_meeting.require_password_for_pmi_meetings | string |  |  
+action_result.data.\*.schedule_meeting.require_password_for_scheduled_meetings | boolean |  |  
+action_result.data.\*.schedule_meeting.require_password_for_scheduling_new_meetings | boolean |  |  
+action_result.data.\*.schedule_meeting.use_pmi_for_instant_meetings | boolean |  |  
+action_result.data.\*.schedule_meeting.use_pmi_for_scheduled_meetings | boolean |  |  
+action_result.data.\*.telephony.audio_conference_info | string |  |  
+action_result.data.\*.telephony.show_international_numbers_link | boolean |  |  
+action_result.data.\*.telephony.third_party_audio | boolean |  |  
+action_result.data.\*.tsp.call_out | boolean |  |  
+action_result.data.\*.tsp.call_out_countries | string |  |  
+action_result.data.\*.tsp.show_international_numbers_link | boolean |  |  
+action_result.summary | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'get user'
 Get zoom user info
@@ -269,49 +320,55 @@ Read only: **True**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**user\_id** |  required  | Zoom user ID | string |  `zoom user id` 
+**user_id** |  required  | Zoom user ID | string |  `zoom user id` 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.user\_id | string |  `zoom user id` 
-action\_result\.data\.\*\.account\_id | string | 
-action\_result\.data\.\*\.account\_number | numeric | 
-action\_result\.data\.\*\.cms\_user\_id | string | 
-action\_result\.data\.\*\.company | string | 
-action\_result\.data\.\*\.created\_at | string | 
-action\_result\.data\.\*\.dept | string | 
-action\_result\.data\.\*\.email | string | 
-action\_result\.data\.\*\.first\_name | string | 
-action\_result\.data\.\*\.group\_ids | string | 
-action\_result\.data\.\*\.host\_key | string | 
-action\_result\.data\.\*\.id | string | 
-action\_result\.data\.\*\.im\_group\_ids | string | 
-action\_result\.data\.\*\.jid | string | 
-action\_result\.data\.\*\.job\_title | string | 
-action\_result\.data\.\*\.language | string | 
-action\_result\.data\.\*\.last\_client\_version | string | 
-action\_result\.data\.\*\.last\_login\_time | string | 
-action\_result\.data\.\*\.last\_name | string | 
-action\_result\.data\.\*\.location | string | 
-action\_result\.data\.\*\.personal\_meeting\_url | string | 
-action\_result\.data\.\*\.phone\_country | string | 
-action\_result\.data\.\*\.phone\_number | string | 
-action\_result\.data\.\*\.pic\_url | string | 
-action\_result\.data\.\*\.pmi | numeric | 
-action\_result\.data\.\*\.role\_id | string | 
-action\_result\.data\.\*\.role\_name | string | 
-action\_result\.data\.\*\.status | string | 
-action\_result\.data\.\*\.timezone | string | 
-action\_result\.data\.\*\.type | numeric | 
-action\_result\.data\.\*\.use\_pmi | boolean | 
-action\_result\.data\.\*\.vanity\_url | string | 
-action\_result\.data\.\*\.verified | numeric | 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.user_id | string |  `zoom user id`  |  
+action_result.data.\*.account_id | string |  |  
+action_result.data.\*.account_number | numeric |  |  
+action_result.data.\*.cluster | string |  |   us05 
+action_result.data.\*.cms_user_id | string |  |  
+action_result.data.\*.company | string |  |  
+action_result.data.\*.created_at | string |  |  
+action_result.data.\*.custom_attributes.\*.key | string |  |   examplecbf_{0}&&&&cbf_p9y_qhefsveacfrdepuvzw 
+action_result.data.\*.custom_attributes.\*.name | string |  |   id 
+action_result.data.\*.custom_attributes.\*.value | string |  |  
+action_result.data.\*.dept | string |  |  
+action_result.data.\*.display_name | string |  |   Herman Edwards 
+action_result.data.\*.email | string |  `email`  |  
+action_result.data.\*.first_name | string |  |  
+action_result.data.\*.group_ids | string |  |  
+action_result.data.\*.host_key | string |  |  
+action_result.data.\*.id | string |  `zoom user id`  |   A0BiCtoDEFGHIzYaZcLdsA 
+action_result.data.\*.im_group_ids | string |  |  
+action_result.data.\*.jid | string |  |  
+action_result.data.\*.job_title | string |  |  
+action_result.data.\*.language | string |  |  
+action_result.data.\*.last_client_version | string |  |  
+action_result.data.\*.last_login_time | string |  |  
+action_result.data.\*.last_name | string |  |  
+action_result.data.\*.location | string |  |  
+action_result.data.\*.personal_meeting_url | string |  |  
+action_result.data.\*.phone_country | string |  |  
+action_result.data.\*.phone_number | string |  |  
+action_result.data.\*.pic_url | string |  |  
+action_result.data.\*.pmi | numeric |  |  
+action_result.data.\*.role_id | string |  |  
+action_result.data.\*.role_name | string |  |  
+action_result.data.\*.status | string |  |  
+action_result.data.\*.timezone | string |  |  
+action_result.data.\*.type | numeric |  |  
+action_result.data.\*.use_pmi | boolean |  |  
+action_result.data.\*.user_created_at | string |  |   2023-03-01T07:08:51Z 
+action_result.data.\*.vanity_url | string |  |  
+action_result.data.\*.verified | numeric |  |  
+action_result.summary | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'create meeting'
 Create zoom meeting
@@ -319,87 +376,88 @@ Create zoom meeting
 Type: **generic**  
 Read only: **False**
 
-In <b>user\_id</b> parameter, user ID or user's email can be used\. Also, we can pass the <b>me</b> value for current user\.
+In <b>user_id</b> parameter, user ID or user's email can be used. Also, we can pass the <b>me</b> value for current user.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**user\_id** |  required  | User id | string |  `zoom user id`  `email` 
+**user_id** |  required  | User id | string |  `zoom user id`  `email` 
 **password** |  optional  | Meeting password | string | 
-**gen\_password** |  optional  | Auto generate meeting password | boolean | 
-**waiting\_room** |  required  | Enable waiting room | string | 
+**gen_password** |  optional  | Auto generate meeting password | boolean | 
+**waiting_room** |  required  | Enable waiting room | string | 
 **topic** |  optional  | Topic of meeting | string | 
 **agenda** |  optional  | Agenda of meeting | string | 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.agenda | string | 
-action\_result\.parameter\.gen\_password | boolean | 
-action\_result\.parameter\.password | string | 
-action\_result\.parameter\.topic | string | 
-action\_result\.parameter\.user\_id | string |  `zoom user id`  `email` 
-action\_result\.parameter\.waiting\_room | string | 
-action\_result\.data\.\*\.agenda | string | 
-action\_result\.data\.\*\.created\_at | string | 
-action\_result\.data\.\*\.duration | numeric | 
-action\_result\.data\.\*\.encrypted\_password | string | 
-action\_result\.data\.\*\.h323\_password | string | 
-action\_result\.data\.\*\.host\_email | string | 
-action\_result\.data\.\*\.host\_id | string | 
-action\_result\.data\.\*\.id | numeric | 
-action\_result\.data\.\*\.join\_url | string |  `url` 
-action\_result\.data\.\*\.password | string | 
-action\_result\.data\.\*\.pre\_schedule | boolean | 
-action\_result\.data\.\*\.pstn\_password | string | 
-action\_result\.data\.\*\.settings\.allow\_multiple\_devices | boolean | 
-action\_result\.data\.\*\.settings\.alternative\_host\_update\_polls | boolean | 
-action\_result\.data\.\*\.settings\.alternative\_hosts | string | 
-action\_result\.data\.\*\.settings\.alternative\_hosts\_email\_notification | boolean | 
-action\_result\.data\.\*\.settings\.approval\_type | numeric | 
-action\_result\.data\.\*\.settings\.approved\_or\_denied\_countries\_or\_regions\.enable | boolean | 
-action\_result\.data\.\*\.settings\.audio | string | 
-action\_result\.data\.\*\.settings\.auto\_recording | string | 
-action\_result\.data\.\*\.settings\.breakout\_room\.enable | boolean | 
-action\_result\.data\.\*\.settings\.close\_registration | boolean | 
-action\_result\.data\.\*\.settings\.cn\_meeting | boolean | 
-action\_result\.data\.\*\.settings\.device\_testing | boolean | 
-action\_result\.data\.\*\.settings\.email\_notification | boolean | 
-action\_result\.data\.\*\.settings\.encryption\_type | string | 
-action\_result\.data\.\*\.settings\.enforce\_login | boolean | 
-action\_result\.data\.\*\.settings\.enforce\_login\_domains | string | 
-action\_result\.data\.\*\.settings\.focus\_mode | boolean | 
-action\_result\.data\.\*\.settings\.host\_save\_video\_order | boolean | 
-action\_result\.data\.\*\.settings\.host\_video | boolean | 
-action\_result\.data\.\*\.settings\.in\_meeting | boolean | 
-action\_result\.data\.\*\.settings\.jbh\_time | numeric | 
-action\_result\.data\.\*\.settings\.join\_before\_host | boolean | 
-action\_result\.data\.\*\.settings\.meeting\_authentication | boolean | 
-action\_result\.data\.\*\.settings\.mute\_upon\_entry | boolean | 
-action\_result\.data\.\*\.settings\.participant\_video | boolean | 
-action\_result\.data\.\*\.settings\.private\_meeting | boolean | 
-action\_result\.data\.\*\.settings\.registrants\_confirmation\_email | boolean | 
-action\_result\.data\.\*\.settings\.registrants\_email\_notification | boolean | 
-action\_result\.data\.\*\.settings\.request\_permission\_to\_unmute\_participants | boolean | 
-action\_result\.data\.\*\.settings\.show\_share\_button | boolean | 
-action\_result\.data\.\*\.settings\.use\_pmi | boolean | 
-action\_result\.data\.\*\.settings\.waiting\_room | boolean | 
-action\_result\.data\.\*\.settings\.watermark | boolean | 
-action\_result\.data\.\*\.start\_time | string | 
-action\_result\.data\.\*\.start\_url | string | 
-action\_result\.data\.\*\.status | string | 
-action\_result\.data\.\*\.timezone | string | 
-action\_result\.data\.\*\.topic | string | 
-action\_result\.data\.\*\.type | numeric | 
-action\_result\.data\.\*\.uuid | string | 
-action\_result\.summary\.meeting\_created | boolean | 
-action\_result\.summary\.meeting\_id | string |  `zoom meeting id` 
-action\_result\.summary\.password | string | 
-action\_result\.summary\.waiting\_room | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.agenda | string |  |   Test Agenda 
+action_result.parameter.gen_password | boolean |  |   None  True  False 
+action_result.parameter.password | string |  |   testPass1 
+action_result.parameter.topic | string |  |   Test Topic 
+action_result.parameter.user_id | string |  `zoom user id`  `email`  |  
+action_result.parameter.waiting_room | string |  |   None 
+action_result.data.\*.agenda | string |  |  
+action_result.data.\*.created_at | string |  |  
+action_result.data.\*.duration | numeric |  |  
+action_result.data.\*.encrypted_password | string |  |  
+action_result.data.\*.h323_password | string |  |  
+action_result.data.\*.host_email | string |  |  
+action_result.data.\*.host_id | string |  `zoom user id`  `email`  |   A0BiCtoDEFGHIzYaZcLdsA 
+action_result.data.\*.id | numeric |  |  
+action_result.data.\*.join_url | string |  `url`  |  
+action_result.data.\*.password | string |  |  
+action_result.data.\*.pre_schedule | boolean |  |  
+action_result.data.\*.pstn_password | string |  |  
+action_result.data.\*.settings.allow_multiple_devices | boolean |  |  
+action_result.data.\*.settings.alternative_host_update_polls | boolean |  |  
+action_result.data.\*.settings.alternative_hosts | string |  |  
+action_result.data.\*.settings.alternative_hosts_email_notification | boolean |  |  
+action_result.data.\*.settings.approval_type | numeric |  |  
+action_result.data.\*.settings.approved_or_denied_countries_or_regions.enable | boolean |  |  
+action_result.data.\*.settings.audio | string |  |  
+action_result.data.\*.settings.auto_recording | string |  |  
+action_result.data.\*.settings.breakout_room.enable | boolean |  |  
+action_result.data.\*.settings.close_registration | boolean |  |  
+action_result.data.\*.settings.cn_meeting | boolean |  |  
+action_result.data.\*.settings.device_testing | boolean |  |  
+action_result.data.\*.settings.email_notification | boolean |  |  
+action_result.data.\*.settings.enable_dedicated_group_chat | boolean |  |   True  False 
+action_result.data.\*.settings.encryption_type | string |  |  
+action_result.data.\*.settings.enforce_login | boolean |  |  
+action_result.data.\*.settings.enforce_login_domains | string |  |  
+action_result.data.\*.settings.focus_mode | boolean |  |  
+action_result.data.\*.settings.host_save_video_order | boolean |  |  
+action_result.data.\*.settings.host_video | boolean |  |  
+action_result.data.\*.settings.in_meeting | boolean |  |  
+action_result.data.\*.settings.jbh_time | numeric |  |  
+action_result.data.\*.settings.join_before_host | boolean |  |  
+action_result.data.\*.settings.meeting_authentication | boolean |  |  
+action_result.data.\*.settings.mute_upon_entry | boolean |  |  
+action_result.data.\*.settings.participant_video | boolean |  |  
+action_result.data.\*.settings.private_meeting | boolean |  |  
+action_result.data.\*.settings.registrants_confirmation_email | boolean |  |  
+action_result.data.\*.settings.registrants_email_notification | boolean |  |  
+action_result.data.\*.settings.request_permission_to_unmute_participants | boolean |  |  
+action_result.data.\*.settings.show_share_button | boolean |  |  
+action_result.data.\*.settings.use_pmi | boolean |  |  
+action_result.data.\*.settings.waiting_room | boolean |  |  
+action_result.data.\*.settings.watermark | boolean |  |  
+action_result.data.\*.start_time | string |  |  
+action_result.data.\*.start_url | string |  |  
+action_result.data.\*.status | string |  |  
+action_result.data.\*.timezone | string |  |  
+action_result.data.\*.topic | string |  |  
+action_result.data.\*.type | numeric |  |  
+action_result.data.\*.uuid | string |  |  
+action_result.summary.meeting_created | boolean |  |   True  False 
+action_result.summary.meeting_id | string |  `zoom meeting id`  |  
+action_result.summary.password | string |  |   testxFghbsuHndTYGF 
+action_result.summary.waiting_room | string |  |   Not Updated 
+action_result.message | string |  |  
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'get meeting'
 Get zoom meeting details
@@ -410,97 +468,99 @@ Read only: **True**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**meeting\_id** |  required  | Zoom meeting ID | string |  `zoom meeting id` 
+**meeting_id** |  required  | Zoom meeting ID | string |  `zoom meeting id` 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.meeting\_id | string |  `zoom meeting id` 
-action\_result\.data\.\*\.agenda | string | 
-action\_result\.data\.\*\.assistant\_id | string | 
-action\_result\.data\.\*\.created\_at | string | 
-action\_result\.data\.\*\.duration | numeric | 
-action\_result\.data\.\*\.encrypted\_password | string | 
-action\_result\.data\.\*\.h323\_password | string | 
-action\_result\.data\.\*\.host\_email | string | 
-action\_result\.data\.\*\.host\_id | string | 
-action\_result\.data\.\*\.id | numeric | 
-action\_result\.data\.\*\.join\_url | string |  `url` 
-action\_result\.data\.\*\.occurrences\.\*\.duration | numeric | 
-action\_result\.data\.\*\.occurrences\.\*\.occurrence\_id | string | 
-action\_result\.data\.\*\.occurrences\.\*\.start\_time | string | 
-action\_result\.data\.\*\.occurrences\.\*\.status | string | 
-action\_result\.data\.\*\.password | string | 
-action\_result\.data\.\*\.pmi | numeric | 
-action\_result\.data\.\*\.pre\_schedule | boolean | 
-action\_result\.data\.\*\.pstn\_password | string | 
-action\_result\.data\.\*\.recurrence\.end\_date\_time | string | 
-action\_result\.data\.\*\.recurrence\.end\_times | numeric | 
-action\_result\.data\.\*\.recurrence\.monthly\_day | numeric | 
-action\_result\.data\.\*\.recurrence\.monthly\_week | numeric | 
-action\_result\.data\.\*\.recurrence\.monthly\_week\_day | numeric | 
-action\_result\.data\.\*\.recurrence\.repeat\_interval | numeric | 
-action\_result\.data\.\*\.recurrence\.type | numeric | 
-action\_result\.data\.\*\.recurrence\.weekly\_days | string | 
-action\_result\.data\.\*\.settings\.allow\_multiple\_devices | boolean | 
-action\_result\.data\.\*\.settings\.alternative\_host\_update\_polls | boolean | 
-action\_result\.data\.\*\.settings\.alternative\_hosts | string | 
-action\_result\.data\.\*\.settings\.alternative\_hosts\_email\_notification | boolean | 
-action\_result\.data\.\*\.settings\.approval\_type | numeric | 
-action\_result\.data\.\*\.settings\.approved\_or\_denied\_countries\_or\_regions\.enable | boolean | 
-action\_result\.data\.\*\.settings\.audio | string | 
-action\_result\.data\.\*\.settings\.authentication\_domains | string | 
-action\_result\.data\.\*\.settings\.authentication\_name | string | 
-action\_result\.data\.\*\.settings\.authentication\_option | string | 
-action\_result\.data\.\*\.settings\.auto\_recording | string | 
-action\_result\.data\.\*\.settings\.breakout\_room\.enable | boolean | 
-action\_result\.data\.\*\.settings\.close\_registration | boolean | 
-action\_result\.data\.\*\.settings\.cn\_meeting | boolean | 
-action\_result\.data\.\*\.settings\.contact\_email | string | 
-action\_result\.data\.\*\.settings\.contact\_name | string | 
-action\_result\.data\.\*\.settings\.device\_testing | boolean | 
-action\_result\.data\.\*\.settings\.email\_notification | boolean | 
-action\_result\.data\.\*\.settings\.encryption\_type | string | 
-action\_result\.data\.\*\.settings\.enforce\_login | boolean | 
-action\_result\.data\.\*\.settings\.enforce\_login\_domains | string | 
-action\_result\.data\.\*\.settings\.focus\_mode | boolean | 
-action\_result\.data\.\*\.settings\.global\_dial\_in\_countries | string | 
-action\_result\.data\.\*\.settings\.global\_dial\_in\_numbers\.\*\.city | string | 
-action\_result\.data\.\*\.settings\.global\_dial\_in\_numbers\.\*\.country | string | 
-action\_result\.data\.\*\.settings\.global\_dial\_in\_numbers\.\*\.country\_name | string | 
-action\_result\.data\.\*\.settings\.global\_dial\_in\_numbers\.\*\.number | string | 
-action\_result\.data\.\*\.settings\.global\_dial\_in\_numbers\.\*\.type | string | 
-action\_result\.data\.\*\.settings\.host\_save\_video\_order | boolean | 
-action\_result\.data\.\*\.settings\.host\_video | boolean | 
-action\_result\.data\.\*\.settings\.in\_meeting | boolean | 
-action\_result\.data\.\*\.settings\.jbh\_time | numeric | 
-action\_result\.data\.\*\.settings\.join\_before\_host | boolean | 
-action\_result\.data\.\*\.settings\.meeting\_authentication | boolean | 
-action\_result\.data\.\*\.settings\.mute\_upon\_entry | boolean | 
-action\_result\.data\.\*\.settings\.participant\_video | boolean | 
-action\_result\.data\.\*\.settings\.private\_meeting | boolean | 
-action\_result\.data\.\*\.settings\.registrants\_confirmation\_email | boolean | 
-action\_result\.data\.\*\.settings\.registrants\_email\_notification | boolean | 
-action\_result\.data\.\*\.settings\.registration\_type | numeric | 
-action\_result\.data\.\*\.settings\.request\_permission\_to\_unmute\_participants | boolean | 
-action\_result\.data\.\*\.settings\.show\_share\_button | boolean | 
-action\_result\.data\.\*\.settings\.use\_pmi | boolean | 
-action\_result\.data\.\*\.settings\.waiting\_room | boolean | 
-action\_result\.data\.\*\.settings\.watermark | boolean | 
-action\_result\.data\.\*\.start\_time | string | 
-action\_result\.data\.\*\.start\_url | string | 
-action\_result\.data\.\*\.status | string | 
-action\_result\.data\.\*\.timezone | string | 
-action\_result\.data\.\*\.topic | string | 
-action\_result\.data\.\*\.tracking\_fields\.\*\.field | string | 
-action\_result\.data\.\*\.tracking\_fields\.\*\.value | string | 
-action\_result\.data\.\*\.type | numeric | 
-action\_result\.data\.\*\.uuid | string | 
-action\_result\.summary | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.meeting_id | string |  `zoom meeting id`  |   92512345678 
+action_result.data.\*.agenda | string |  |  
+action_result.data.\*.assistant_id | string |  |  
+action_result.data.\*.created_at | string |  |  
+action_result.data.\*.duration | numeric |  |  
+action_result.data.\*.encrypted_password | string |  |  
+action_result.data.\*.h323_password | string |  |  
+action_result.data.\*.host_email | string |  |  
+action_result.data.\*.host_id | string |  |  
+action_result.data.\*.id | numeric |  |  
+action_result.data.\*.join_url | string |  `url`  |  
+action_result.data.\*.occurrences.\*.duration | numeric |  |  
+action_result.data.\*.occurrences.\*.occurrence_id | string |  |  
+action_result.data.\*.occurrences.\*.start_time | string |  |  
+action_result.data.\*.occurrences.\*.status | string |  |  
+action_result.data.\*.password | string |  |  
+action_result.data.\*.pmi | numeric |  |  
+action_result.data.\*.pre_schedule | boolean |  |  
+action_result.data.\*.pstn_password | string |  |  
+action_result.data.\*.recurrence.end_date_time | string |  |  
+action_result.data.\*.recurrence.end_times | numeric |  |  
+action_result.data.\*.recurrence.monthly_day | numeric |  |  
+action_result.data.\*.recurrence.monthly_week | numeric |  |  
+action_result.data.\*.recurrence.monthly_week_day | numeric |  |  
+action_result.data.\*.recurrence.repeat_interval | numeric |  |  
+action_result.data.\*.recurrence.type | numeric |  |  
+action_result.data.\*.recurrence.weekly_days | string |  |  
+action_result.data.\*.settings.allow_multiple_devices | boolean |  |  
+action_result.data.\*.settings.alternative_host_update_polls | boolean |  |  
+action_result.data.\*.settings.alternative_hosts | string |  |  
+action_result.data.\*.settings.alternative_hosts_email_notification | boolean |  |  
+action_result.data.\*.settings.approval_type | numeric |  |  
+action_result.data.\*.settings.approved_or_denied_countries_or_regions.enable | boolean |  |  
+action_result.data.\*.settings.audio | string |  |  
+action_result.data.\*.settings.authentication_domains | string |  |  
+action_result.data.\*.settings.authentication_name | string |  |  
+action_result.data.\*.settings.authentication_option | string |  |  
+action_result.data.\*.settings.auto_recording | string |  |  
+action_result.data.\*.settings.breakout_room.enable | boolean |  |  
+action_result.data.\*.settings.close_registration | boolean |  |  
+action_result.data.\*.settings.cn_meeting | boolean |  |  
+action_result.data.\*.settings.contact_email | string |  |  
+action_result.data.\*.settings.contact_name | string |  |  
+action_result.data.\*.settings.device_testing | boolean |  |  
+action_result.data.\*.settings.email_notification | boolean |  |  
+action_result.data.\*.settings.enable_dedicated_group_chat | boolean |  |   True  False 
+action_result.data.\*.settings.encryption_type | string |  |  
+action_result.data.\*.settings.enforce_login | boolean |  |  
+action_result.data.\*.settings.enforce_login_domains | string |  |  
+action_result.data.\*.settings.focus_mode | boolean |  |  
+action_result.data.\*.settings.global_dial_in_countries | string |  |  
+action_result.data.\*.settings.global_dial_in_numbers.\*.city | string |  |  
+action_result.data.\*.settings.global_dial_in_numbers.\*.country | string |  |  
+action_result.data.\*.settings.global_dial_in_numbers.\*.country_name | string |  |  
+action_result.data.\*.settings.global_dial_in_numbers.\*.number | string |  |  
+action_result.data.\*.settings.global_dial_in_numbers.\*.type | string |  |  
+action_result.data.\*.settings.host_save_video_order | boolean |  |  
+action_result.data.\*.settings.host_video | boolean |  |  
+action_result.data.\*.settings.in_meeting | boolean |  |  
+action_result.data.\*.settings.jbh_time | numeric |  |  
+action_result.data.\*.settings.join_before_host | boolean |  |  
+action_result.data.\*.settings.meeting_authentication | boolean |  |  
+action_result.data.\*.settings.mute_upon_entry | boolean |  |  
+action_result.data.\*.settings.participant_video | boolean |  |  
+action_result.data.\*.settings.private_meeting | boolean |  |  
+action_result.data.\*.settings.registrants_confirmation_email | boolean |  |  
+action_result.data.\*.settings.registrants_email_notification | boolean |  |  
+action_result.data.\*.settings.registration_type | numeric |  |  
+action_result.data.\*.settings.request_permission_to_unmute_participants | boolean |  |  
+action_result.data.\*.settings.show_join_info | boolean |  |   True  False 
+action_result.data.\*.settings.show_share_button | boolean |  |  
+action_result.data.\*.settings.use_pmi | boolean |  |  
+action_result.data.\*.settings.waiting_room | boolean |  |  
+action_result.data.\*.settings.watermark | boolean |  |  
+action_result.data.\*.start_time | string |  |  
+action_result.data.\*.start_url | string |  |  
+action_result.data.\*.status | string |  |  
+action_result.data.\*.timezone | string |  |  
+action_result.data.\*.topic | string |  |  
+action_result.data.\*.tracking_fields.\*.field | string |  |  
+action_result.data.\*.tracking_fields.\*.value | string |  |  
+action_result.data.\*.type | numeric |  |  
+action_result.data.\*.uuid | string |  |  
+action_result.summary | string |  |  
+action_result.message | string |  |  
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'update meeting'
 Update zoom meeting
@@ -511,26 +571,26 @@ Read only: **False**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**meeting\_id** |  required  | Zoom meeting ID | string |  `zoom meeting id` 
+**meeting_id** |  required  | Zoom meeting ID | string |  `zoom meeting id` 
 **password** |  optional  | Meeting password | string | 
-**gen\_password** |  optional  | Auto generate meeting password | boolean | 
-**waiting\_room** |  required  | Enable waiting room | string | 
+**gen_password** |  optional  | Auto generate meeting password | boolean | 
+**waiting_room** |  required  | Enable waiting room | string | 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.gen\_password | boolean | 
-action\_result\.parameter\.meeting\_id | string |  `zoom meeting id` 
-action\_result\.parameter\.password | string | 
-action\_result\.parameter\.waiting\_room | string | 
-action\_result\.data | string | 
-action\_result\.summary\.meeting\_updated | boolean | 
-action\_result\.summary\.password | string | 
-action\_result\.summary\.waiting\_room | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.gen_password | boolean |  |   None  True  False 
+action_result.parameter.meeting_id | string |  `zoom meeting id`  |   92512345678 
+action_result.parameter.password | string |  |   testPass1 
+action_result.parameter.waiting_room | string |  |   None 
+action_result.data | string |  |  
+action_result.summary.meeting_updated | boolean |  |   True  False 
+action_result.summary.password | string |  |   testxFghbsuHndTYGF 
+action_result.summary.waiting_room | string |  |   Not Updated 
+action_result.message | string |  |  
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'delete meeting'
 Delete zoom meeting
@@ -538,23 +598,23 @@ Delete zoom meeting
 Type: **generic**  
 Read only: **False**
 
-Deletes previous and future zoom meetings\.
+Deletes previous and future zoom meetings.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**meeting\_id** |  required  | Zoom meeting ID | string |  `zoom meeting id` 
+**meeting_id** |  required  | Zoom meeting ID | string |  `zoom meeting id` 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.meeting\_id | string |  `zoom meeting id` 
-action\_result\.data | string | 
-action\_result\.summary\.meeting\_deleted | boolean | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.meeting_id | string |  `zoom meeting id`  |   92512345678 
+action_result.data | string |  |  
+action_result.summary.meeting_deleted | boolean |  |   True  False 
+action_result.message | string |  |  
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'update user settings'
 Update zoom user settings
@@ -565,31 +625,32 @@ Read only: **False**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**user\_id** |  required  | Zoom user ID | string |  `zoom user id` 
-**req\_password\_pmi** |  required  | Require password for PMI | string | 
-**pmi\_password** |  optional  | User pmi password | string | 
-**gen\_pmi\_password** |  optional  | Auto generate pmi password | boolean | 
-**waiting\_room** |  required  | Enable waiting room | string | 
-**req\_password\_sched** |  required  | Require password for scheduling meetings | string | 
-**req\_password\_inst** |  required  | Require password for instant meetings | string | 
+**user_id** |  required  | Zoom user ID | string |  `zoom user id` 
+**req_password_pmi** |  required  | Require password for PMI | string | 
+**pmi_password** |  optional  | User pmi password | string | 
+**gen_pmi_password** |  optional  | Auto generate pmi password | boolean | 
+**waiting_room** |  required  | Enable waiting room | string | 
+**req_password_sched** |  required  | Require password for scheduling meetings | string | 
+**req_password_inst** |  required  | Require password for instant meetings | string | 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.gen\_pmi\_password | boolean | 
-action\_result\.parameter\.pmi\_password | string | 
-action\_result\.parameter\.req\_password\_inst | string | 
-action\_result\.parameter\.req\_password\_pmi | string | 
-action\_result\.parameter\.req\_password\_sched | string | 
-action\_result\.parameter\.user\_id | string |  `zoom user id` 
-action\_result\.parameter\.waiting\_room | string | 
-action\_result\.data | string | 
-action\_result\.summary\.pmi\_password | string | 
-action\_result\.summary\.require\_password\_for\_instant\_meetings | string | 
-action\_result\.summary\.require\_password\_for\_personal\_meeting\_instance | string | 
-action\_result\.summary\.require\_password\_for\_scheduling\_new\_meetings | string | 
-action\_result\.summary\.waiting\_room | string | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric | 
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.gen_pmi_password | boolean |  |   None  True  False 
+action_result.parameter.pmi_password | string |  |   test@123 
+action_result.parameter.req_password_inst | string |  |   None 
+action_result.parameter.req_password_pmi | string |  |   None 
+action_result.parameter.req_password_sched | string |  |   None 
+action_result.parameter.user_id | string |  `zoom user id`  |   A0BiCtoDEFGHIzYaZcLdsA 
+action_result.parameter.user_id | string |  `zoom user id`  |   A0BiCtoDEFGHIzYaZcLdsA 
+action_result.parameter.waiting_room | string |  |   None 
+action_result.data | string |  |  
+action_result.summary.pmi_password | string |  |   Not Updated 
+action_result.summary.require_password_for_instant_meetings | string |  |   Not Updated 
+action_result.summary.require_password_for_personal_meeting_instance | string |  |   Not Updated 
+action_result.summary.require_password_for_scheduling_new_meetings | string |  |   Not Updated 
+action_result.summary.waiting_room | string |  |   Not Updated 
+action_result.message | string |  |  
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1 
