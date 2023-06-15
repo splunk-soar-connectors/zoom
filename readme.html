@@ -22,8 +22,8 @@
     <h3>App Configurations (Zoom Side)</h3>
     <h4>For JWT Authentication</h4>
     <p>For the Zoom app for Splunk SOAR to be configured correctly, you must first create a JWT App in your Zoom App Marketplace account. A JWT App can be created by going <a href="https://marketplace.zoom.us/develop/create">here</a> and clicking the "Create" button under the "JWT" app type. Once you've created your JWT app you'll be provided with an API Key and an API Secret, keep track of these. They will be necessary for the configuration on the Splunk SOAR side.</p>
-    <h4>For Server-to-Server Oauth Authentication</h4>
-    <p>For the Zoom app for SOAR to be configured correctly, you must first create a Server-to-Server Oauth app in your Zoom App Marketplace account. A Server-to-Server Oauth App can be created by going <a href="https://developers.zoom.us/docs/internal-apps/" target="_blank">here</a> and clicking the "Create" button under the "Server-to-Server Oauth" app type. Once you've created your Server-to-Server Oauth app you'll be provided with an account id, client id and client secret, keep track of these. They will be necessary for the configuration on the SOAR side. To ensure that all actions are executed properly, you must include the following scopes in the Server-to-Server Oauth app.</p>
+    <h4>For Server-to-Server OAuth Authentication</h4>
+    <p>For the Zoom app for SOAR to be configured correctly, you must first create a Server-to-Server OAuth app in your Zoom App Marketplace account. A Server-to-Server OAuth App can be created by going <a href="https://developers.zoom.us/docs/internal-apps/" target="_blank">here</a> and clicking the "Create" button under the "Server-to-Server OAuth" app type. Once you've created your Server-to-Server OAuth app you'll be provided with an account id, client id and client secret, keep track of these. They will be necessary for the configuration on the SOAR side. To ensure that all actions are executed properly, you must include the following scopes in the Server-to-Server OAuth app.</p>
     <ul>
       <li>user:read:admin</li>
       <li>user:write:admin</li>
@@ -32,7 +32,7 @@
     </ul>
     <p>We recommend you to use the Server-to-Server OAuth authentication because in short time JWT authentication will be deprecated from <a href="https://developers.zoom.us/docs/internal-apps/jwt-faq/" target="_blank">zoom</a> platform.</p>
     <h3>App Configuration (Splunk> SOAR Side)</h3>
-    <p>For Server-to-Server Oauth configuration of the Zoom App for Splunk> SOAR requires three fields account id, client id and client secret which are provided by Zoom.</p>
+    <p>For Server-to-Server OAuth configuration of the Zoom App for Splunk> SOAR requires three fields account id, client id and client secret which are provided by Zoom.</p>
     <p>For JWT authentication configuration of the Zoom App for Splunk> SOAR requires two fields API Key and API Secret which are provided by Zoom. </p>
     <p>The last field is the "Base URL" field which is simply the base URL for the Zoom REST API. The default value provided, "https://api.zoom/us/v2" should not need to be changed.</p>
     <h3>Actions</h3>

@@ -544,7 +544,7 @@ class ZoomConnector(BaseConnector):
 
         if self._auth_method == SERVER_TO_SERVER_OAUTH_METHOD:
             if not all([self._client_id, self._client_secret, self._account_id]):
-                message = "client id or client secret or account id not found."
+                message = "Please provide the client id and client secret and account id"
                 return self.set_status(
                     phantom.APP_ERROR, message
                 )
