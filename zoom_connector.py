@@ -560,7 +560,7 @@ class ZoomConnector(BaseConnector):
                     self.save_progress(TEST_CONNECTIVITY_FAILED)
                     return self.get_status()
         if self._auth_method == JWT_STRING and not all([self._api_key, self._api_secret]):
-            return self.set_status(phantom.APP_ERROR, "Api key or Api secret not found")
+            return self.set_status(phantom.APP_ERROR, "Please provide the Api key and Api secret")
 
         return phantom.APP_SUCCESS
 
