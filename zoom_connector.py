@@ -182,6 +182,9 @@ class ZoomConnector(BaseConnector):
 
         if new_token:
             headers = None
+            url = endpoint
+        else:
+            url = '{}{}'.format(self._base_url, endpoint)
         kwargs['headers'] = headers
         resp_json = None
 
@@ -191,12 +194,6 @@ class ZoomConnector(BaseConnector):
             msg = 'Invalid method: {0}'.format(method)
             self.error_print(msg)
             return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
-
-        # Create a URL to connect to
-        if not new_token:
-            url = '{}{}'.format(self._base_url, endpoint)
-        else:
-            url = endpoint
 
         try:
             r = request_func(url,
