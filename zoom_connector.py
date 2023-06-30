@@ -1,6 +1,6 @@
 # File: zoom_connector.py
 #
-# Copyright (c) 2021-2022 Splunk Inc.
+# Copyright (c) 2021-2023 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import json
 from datetime import datetime, timedelta
 from urllib.parse import unquote
 
+import encryption_helper
 import jwt
 import phantom.app as phantom
 import requests
@@ -26,6 +27,7 @@ from bs4 import BeautifulSoup, UnicodeDammit
 from password_generator import PasswordGenerator
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
+from requests.auth import HTTPBasicAuth
 
 from zoom_consts import *
 
@@ -43,38 +45,35 @@ class ZoomConnector(BaseConnector):
         super(ZoomConnector, self).__init__()
 
         self._state = None
-
+        self._token = None
         self._base_url = None
 
     def _get_error_message_from_exception(self, e):
-        """ This method is used to get appropriate error messages from the exception.
+        """
+        Get appropriate error message from the exception.
         :param e: Exception object
         :return: error message
         """
 
+        error_code = None
+        error_msg = ERROR_MSG_UNAVAILABLE
+
+        self.error_print("Error occurred.", e)
+
         try:
-            if e.args:
+            if hasattr(e, "args"):
                 if len(e.args) > 1:
                     error_code = e.args[0]
                     error_msg = e.args[1]
                 elif len(e.args) == 1:
-                    error_code = ERR_CODE_MSG
                     error_msg = e.args[0]
-            else:
-                error_code = ERR_CODE_MSG
-                error_msg = ERR_MSG_UNAVAILABLE
-        except Exception:
-            error_code = ERR_CODE_MSG
-            error_msg = ERR_MSG_UNAVAILABLE
+        except Exception as e:
+            self.error_print("Error occurred while fetching exception information. Details: {}".format(str(e)))
 
-        try:
-            if error_code in ERR_CODE_MSG:
-                error_text = 'Error Message: {0}'.format(error_msg)
-            else:
-                error_text = 'Error Code: {0}. Error Message: {1}'.format(error_code, error_msg)
-        except Exception:
-            self.debug_print('Error occurred while parsing the error message')
-            error_text = PARSE_ERR_MSG
+        if not error_code:
+            error_text = "Error Message: {}".format(error_msg)
+        else:
+            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_msg)
 
         return error_text
 
@@ -115,8 +114,8 @@ class ZoomConnector(BaseConnector):
         try:
             resp_json = r.json()
         except Exception as e:
-            err_msg = self._get_error_message_from_exception(e)
-            return RetVal(action_result.set_status(phantom.APP_ERROR, 'Unable to parse JSON response. Error: {0}'.format(err_msg), None))
+            error_message = self._get_error_message_from_exception(e)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, 'Unable to parse JSON response. Error: {0}'.format(error_message), None))
 
         # Please specify the status codes here
         if 200 <= r.status_code < 399:
@@ -155,20 +154,38 @@ class ZoomConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
-    def _make_rest_call(self, endpoint, action_result, method='get', **kwargs):
-        # **kwargs can be any additional parameters that requests.request accepts
-
-        config = self.get_config()
-        token = self._get_jwt(config)
-
-        headers = {
-            'Authorization': 'bearer {}'.format(token),
-            'User-Agent': 'Zoom-Jwt-Request',
-            'content-type': 'application/json'
+    def _get_jwt(self):
+        payload = {
+            'iss': self._api_key,
+            'exp': datetime.now() + timedelta(hours=8)
         }
 
-        kwargs['headers'] = headers
+        token = jwt.encode(payload, self._api_secret)
 
+        return token
+
+    def _make_rest_call(self, endpoint, action_result, method='get', new_token=False, **kwargs):
+        # **kwargs can be any additional parameters that requests.request accepts
+
+        if self._auth_method == JWT_STRING:
+            token = self._get_jwt()
+            headers = {
+                'Authorization': BEARER_STRING.format(token),
+                'User-Agent': 'Zoom-Jwt-Request',
+                'content-type': 'application/json'
+            }
+        else:
+            headers = {
+                'Authorization': BEARER_STRING.format(self._token),
+                'content-type': 'application/json',
+            }
+
+        if new_token:
+            headers = None
+            url = endpoint
+        else:
+            url = '{}{}'.format(self._base_url, endpoint)
+        kwargs['headers'] = headers
         resp_json = None
 
         try:
@@ -178,19 +195,26 @@ class ZoomConnector(BaseConnector):
             self.error_print(msg)
             return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
 
-        # Create a URL to connect to
-        url = '{}{}'.format(self._base_url, endpoint)
-
         try:
-            r = request_func(
-                            url,
+            r = request_func(url,
                             timeout=DEFAULT_TIMEOUT,
                             **kwargs)
+            if r.status_code != requests.codes.no_content and self._auth_method == SERVER_TO_SERVER_OAUTH_METHOD:
+                resp_json = r.json()
+                if resp_json.get('code') == 124 and (resp_json.get("message", "") in INVALID_TOKEN_MSG_LIST):
+                    ret_val = self._get_token(action_result)
+                    if phantom.is_fail(ret_val):
+                        return RetVal(action_result.get_status(), resp_json)
+                    kwargs['headers']['Authorization'] = BEARER_STRING.format(self._token)
+                    r = request_func(
+                                url,
+                                timeout=DEFAULT_TIMEOUT,
+                                **kwargs)
         except Exception as e:
-            err_msg = self._get_error_message_from_exception(e)
-            msg = 'Error connecting to server. {0}'.format(err_msg)
-            self.error_print(msg)
-            return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
+            error_message = self._get_error_message_from_exception(e)
+            message = 'Error connecting to server. {0}'.format(error_message)
+            self.error_print(message)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, message), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -203,7 +227,7 @@ class ZoomConnector(BaseConnector):
         ret_val, _ = self._make_rest_call('/users', action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
-            self.save_progress('Test Connectivity Failed')
+            self.save_progress(TEST_CONNECTIVITY_FAILED)
             return action_result.get_status()
 
         self.save_progress('Test Connectivity Passed')
@@ -407,9 +431,9 @@ class ZoomConnector(BaseConnector):
             if parsed_fields.get('meeting_id'):
                 parsed_fields['meeting_id'] = parsed_fields['meeting_id'].replace(' ', '')
 
-        except Exception as err:
-            err_msg = self._get_error_message_from_exception(err)
-            self.debug_print('Error: {}'.format(err_msg))
+        except Exception as e:
+            error_message = self._get_error_message_from_exception(e)
+            self.debug_print('Error: {}'.format(error_message))
             self.save_progress('Could not parse invitation fields')
 
         response['parsed_fields'] = parsed_fields
@@ -449,15 +473,16 @@ class ZoomConnector(BaseConnector):
         action_result.add_data(response)
         return action_result.set_status(phantom.APP_SUCCESS, 'Meeting information for id {} successfully retrieved'.format(meeting_id))
 
-    def _get_jwt(self, config):
-        payload = {
-            'iss': config['api_key'],
-            'exp': datetime.now() + timedelta(hours=8)
+    def _get_token(self, action_result):
+        params = {
+            "grant_type": "account_credentials",
+            "account_id": self._account_id
         }
-
-        token = jwt.encode(payload, config['api_secret'])
-
-        return token
+        ret_val, response = self._make_rest_call(GET_TOKEN_URL, action_result, method="post", new_token=True, auth=HTTPBasicAuth(self._client_id, self._client_secret), params=params)  # noqa E501
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
+        self._token = response.get("access_token")
+        return phantom.APP_SUCCESS
 
     def handle_action(self, param):
 
@@ -466,9 +491,7 @@ class ZoomConnector(BaseConnector):
         # Get the action that we are supposed to execute for this App Run
         action_id = self.get_action_identifier()
 
-        self.debug_print('action_id: {}'.format(self.get_action_identifier()))
-
-        if action_id == 'test_connectivity':
+        if action_id == TEST_CONNECTIVITY_IDENTIFIER:
             ret_val = self._handle_test_connectivity(param)
 
         elif action_id == 'get_user':
@@ -501,17 +524,52 @@ class ZoomConnector(BaseConnector):
 
         # Load the state
         self._state = self.load_state()
+        if not isinstance(self._state, dict):
+            self.debug_print("Resetting the state file with the default format")
+            self._state = {"app_version": self.get_app_json().get("app_version")}
 
         # Get the asset config
         config = self.get_config()
-
+        self._client_id = config.get("client_id")
+        self._client_secret = config.get("client_secret")
+        self._token = self._state.get("token")
         self._base_url = config['base_url'].rstrip('/')
+        self._auth_method = config.get('auth_method', JWT_STRING)
+        self._api_key = config.get("api_key")
+        self._api_secret = config.get("api_secret")
+        self._account_id = config.get("account_id")
+
+        if self._auth_method == SERVER_TO_SERVER_OAUTH_METHOD:
+            if not all([self._client_id, self._client_secret, self._account_id]):
+                message = "Please provide the client id and client secret and account id"
+                return self.set_status(
+                    phantom.APP_ERROR, message
+                )
+            if self._token:
+                try:
+                    self._token = encryption_helper.decrypt(self._token, self.get_asset_id())
+                except Exception:
+                    self._token = None
+                    self.save_progress("Error in decrypting token")
+            if self.get_action_identifier() == TEST_CONNECTIVITY_IDENTIFIER or not self._token:
+                ret_val = self._get_token(self)
+                if phantom.is_fail(ret_val):
+                    self.save_progress(TEST_CONNECTIVITY_FAILED)
+                    return self.get_status()
+        if self._auth_method == JWT_STRING and not all([self._api_key, self._api_secret]):
+            return self.set_status(phantom.APP_ERROR, "Please provide the Api key and Api secret")
 
         return phantom.APP_SUCCESS
 
     def finalize(self):
 
         # Save the state, this data is saved across actions and app upgrades
+        self._state["token"] = self._token
+        if self._auth_method == SERVER_TO_SERVER_OAUTH_METHOD and self._token:
+            try:
+                self._state["token"] = encryption_helper.encrypt(self._token, self.get_asset_id())
+            except Exception:
+                return phantom.APP_ERROR
         self.save_state(self._state)
         return phantom.APP_SUCCESS
 
