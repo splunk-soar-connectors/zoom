@@ -11,11 +11,11 @@
     "product_version_regex": ".*",
     "publisher": "Splunk",
     "license": "Copyright (c) 2021-2023 Splunk Inc.",
-    "app_version": "2.1.0",
+    "app_version": "3.0.0",
     "utctime_updated": "2022-08-18T22:38:54.000000Z",
     "package_name": "phantom_zoom",
     "main_module": "zoom_connector.py",
-    "min_phantom_version": "6.0.0",
+    "min_phantom_version": "6.0.2",
     "fips_compliant": true,
     "app_wizard_version": "1.0.0",
     "latest_tested_versions": [
@@ -29,39 +29,22 @@
             "default": "https://api.zoom.us/v2",
             "order": 0
         },
-        "auth_method": {
-            "description": "Auth Method",
-            "data_type": "string",
-            "value_list": [
-                "JWT",
-                "Server-to-Server OAuth"
-            ],
-            "default": "JWT",
-            "order": 1
-        },
-        "api_key": {
-            "description": "API Key (JWT)",
-            "data_type": "password",
-            "order": 2
-        },
-        "api_secret": {
-            "description": "API Secret (JWT)",
-            "data_type": "password",
-            "order": 3
-        },
         "account_id": {
             "description": "Account ID (Server-to-Server OAuth)",
             "data_type": "string",
+            "required": true,
             "order": 4
         },
         "client_id": {
             "description": "Client ID (Server-to-Server OAuth)",
             "data_type": "string",
+            "required": true,
             "order": 5
         },
         "client_secret": {
             "description": "Client Secret (Server-to-Server OAuth)",
             "data_type": "password",
+            "required": true,
             "order": 6
         }
     },
@@ -2409,7 +2392,7 @@
             },
             {
                 "module": "soupsieve",
-                "input_file": "wheels/py3/soupsieve-2.4.1-py3-none-any.whl"
+                "input_file": "wheels/py3/soupsieve-2.5-py3-none-any.whl"
             }
         ]
     }

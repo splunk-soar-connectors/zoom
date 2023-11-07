@@ -23,17 +23,13 @@ about meetings (e.g., was the meeting password protected, was the waiting room t
 provides security practitioners a way to ensure that security best practices are being followed with
 regard to Zoom meetings.
 
+### JWT Authentication removal details
+
+In app v3.0.0, We have removed JWT authentication support as per [JWT deprecation guide](https://developers.zoom.us/blog/jwt-deprecation-guide/). Make sure to create zoom app based on [App configuration](#app-configurations-zoom-side) provided below.
+
 ### App Configurations (Zoom Side)
 
-#### For JWT Authentication
-
-For the Zoom app for Splunk SOAR to be configured correctly, you must first create a JWT App in your
-Zoom App Marketplace account. A JWT App can be created by going
-[here](https://marketplace.zoom.us/develop/create) and clicking the "Create" button under the "JWT"
-app type. Once you've created your JWT app you'll be provided with an API Key and an API Secret,
-keep track of these. They will be necessary for the configuration on the Splunk SOAR side.
-
-#### For Server-to-Server OAuth Authentication
+#### Server-to-Server OAuth Authentication
 
 For the Zoom app for SOAR to be configured correctly, you must first create a Server-to-Server OAuth
 app in your Zoom App Marketplace account. A Server-to-Server OAuth App can be created by going
@@ -48,17 +44,10 @@ you must include the following scopes in the Server-to-Server OAuth app.
 -   meeting:read:admin
 -   meeting:write:admin
 
-We recommend you to use the Server-to-Server OAuth authentication because in short time JWT
-authentication will be deprecated from
-[zoom](https://developers.zoom.us/docs/internal-apps/jwt-faq/) platform.
-
 ### App Configuration (Splunk> SOAR Side)
 
 For Server-to-Server OAuth configuration of the Zoom App for Splunk> SOAR requires three fields
 account id, client id and client secret which are provided by Zoom.
-
-For JWT authentication configuration of the Zoom App for Splunk> SOAR requires two fields API Key
-and API Secret which are provided by Zoom.
 
 The last field is the "Base URL" field which is simply the base URL for the Zoom REST API. The
 default value provided, "https://api.zoom/us/v2" should not need to be changed.
