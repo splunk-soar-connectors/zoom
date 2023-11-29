@@ -184,6 +184,9 @@ class ZoomConnector(BaseConnector):
                     self.debug_print("Access token is invalid/ expired, try to generate new access token")
                     ret_val = self._get_token(action_result)
                     if phantom.is_fail(ret_val):
+                        self._token = None
+                        if self._state('token'):
+                            del self._state['token']
                         return RetVal(action_result.get_status(), resp_json)
                     kwargs['headers']['Authorization'] = BEARER_STRING.format(self._token)
                     r = request_func(url, timeout=DEFAULT_TIMEOUT, **kwargs)
@@ -525,6 +528,10 @@ class ZoomConnector(BaseConnector):
             self.debug_print("Try to generate new access token")
             ret_val = self._get_token(self)
             if phantom.is_fail(ret_val):
+                self._token = None
+                # delete existing token
+                if self._state.get('token'):
+                    del self._state['token']
                 self.save_progress(TEST_CONNECTIVITY_FAILED)
                 return self.get_status()
 
