@@ -15,11 +15,11 @@
     "utctime_updated": "2022-08-18T22:38:54.000000Z",
     "package_name": "phantom_zoom",
     "main_module": "zoom_connector.py",
-    "min_phantom_version": "6.0.2",
+    "min_phantom_version": "6.1.1",
     "fips_compliant": true,
     "app_wizard_version": "1.0.0",
     "latest_tested_versions": [
-        "Zoom Cloud 2023 on June 14, 2023"
+        "Zoom Cloud 2023 on December 2, 2023"
     ],
     "configuration": {
         "base_url": {
