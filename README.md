@@ -6,7 +6,7 @@ Connector Version: 3.0.0
 Product Vendor: Zoom  
 Product Name: Zoom Meetings  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 6.0.2  
+Minimum Product Version: 6.1.1  
 
 The app integrates with Zoom Meetings API to perform investigative and generic actions
 
