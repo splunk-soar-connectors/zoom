@@ -33,19 +33,19 @@
             "description": "Account ID (Server-to-Server OAuth)",
             "data_type": "string",
             "required": true,
-            "order": 4
+            "order": 1
         },
         "client_id": {
             "description": "Client ID (Server-to-Server OAuth)",
             "data_type": "string",
             "required": true,
-            "order": 5
+            "order": 2
         },
         "client_secret": {
             "description": "Client Secret (Server-to-Server OAuth)",
             "data_type": "password",
             "required": true,
-            "order": 6
+            "order": 3
         }
     },
     "pip_dependencies": {

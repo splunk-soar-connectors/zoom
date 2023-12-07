@@ -531,11 +531,13 @@ class ZoomConnector(BaseConnector):
 
         if self.get_action_identifier() == TEST_CONNECTIVITY_IDENTIFIER or not self._token:
             self.debug_print("Try to generate new access token")
+            error_message = TEST_CONNECTIVITY_FAILED if self.get_action_identifier() == TEST_CONNECTIVITY_IDENTIFIER \
+                else "Unable to get token"
             ret_val = self._get_token(self)
             if phantom.is_fail(ret_val):
                 # deleting existing token
                 self.remove_token()
-                self.save_progress(TEST_CONNECTIVITY_FAILED)
+                self.save_progress(error_message)
                 return self.get_status()
 
         return phantom.APP_SUCCESS
