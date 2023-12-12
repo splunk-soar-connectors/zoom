@@ -1,2 +1,1 @@
 **Unreleased**
-* Removed JWT authentication method type support (Please refer the documentation for more details)
