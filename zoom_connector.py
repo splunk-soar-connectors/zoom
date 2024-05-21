@@ -321,22 +321,42 @@ class ZoomConnector(BaseConnector):
         waiting_room = param.get('waiting_room')
         topic = param.get('topic')
         agenda = param.get('agenda')
+        alternative_hosts = param.get('alternative_hosts')
+        continuous_meeting_chat = param.get('continuous_meeting_chat')
+        auto_recording = param.get('auto_recording')
+        meeting_invitees = param.get('meeting_invitees')
 
         data = {}
 
         input_param_dict = {
             'password': password,
             'topic': topic,
-            'agenda': agenda,
+            'agenda': agenda
         }
 
         for key, value in input_param_dict.items():
             if value:
                 data[key] = value
+        
+        data['settings'] = {}
 
         if waiting_room != 'None':
-            data['settings'] = {'waiting_room': (waiting_room == 'True')}
-
+            data['settings'] = data['settings'] | {'waiting_room': (waiting_room == 'True')}
+            
+        if alternative_hosts != 'None':
+            data['settings'] =  data['settings'] | {'alternative_hosts': alternative_hosts,
+                               'alternative_hosts_email_notification': True}
+            
+        if continuous_meeting_chat:
+            data['settings'] =  data['settings'] | {'continuous_meeting_chat': {'enable': True}}
+            
+        if auto_recording:
+            data['settings'] =  data['settings'] | {'auto_recording': auto_recording}
+            
+        if meeting_invitees != 'None':
+            attendees = [elem.strip() for elem in meeting_invitees.split(';')]
+            data['settings'] =  data['settings'] | {'meeting_invitees': [{'email': attendee} for attendee in attendees]}
+        
         ret_val, res = self._make_rest_call('/users/{}/meetings'.format(user_id), action_result, json=data, headers=None, method='post')
 
         if phantom.is_fail(ret_val):
@@ -348,7 +368,11 @@ class ZoomConnector(BaseConnector):
             'meeting_id': str(res['id']),
             'meeting_created': True,
             'password': password if password else 'Not Added',
-            'waiting_room': ('Not Added' if waiting_room == 'None' else waiting_room)
+            'waiting_room': ('Not Added' if waiting_room == 'None' else waiting_room),
+            'alternative_hosts': ('Not Added' if alternative_hosts == 'None' else alternative_hosts),
+            'continuous_meeting_chat': ('Not Added' if not continuous_meeting_chat else str(continuous_meeting_chat)),
+            'auto_recording': ('Not Added' if auto_recording == "none" else auto_recording),
+            'meeting_invitees': ('Not Added' if meeting_invitees == 'None' else meeting_invitees)
         })
 
         return action_result.set_status(phantom.APP_SUCCESS, 'Meeting {} successfully created'.format(res['id']))
