@@ -10,7 +10,7 @@
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2021-2023 Splunk Inc.",
+    "license": "Copyright (c) 2021-2024 Splunk Inc.",
     "app_version": "3.0.0",
     "utctime_updated": "2022-08-18T22:38:54.000000Z",
     "package_name": "phantom_zoom",
@@ -55,16 +55,8 @@
                 "input_file": "wheels/py3/PyJWT-2.4.0-py3-none-any.whl"
             },
             {
-                "module": "beautifulsoup4",
-                "input_file": "wheels/py3/beautifulsoup4-4.9.1-py3-none-any.whl"
-            },
-            {
                 "module": "random_password_generator",
                 "input_file": "wheels/py3/random_password_generator-2.1.0-py3-none-any.whl"
-            },
-            {
-                "module": "soupsieve",
-                "input_file": "wheels/py3/soupsieve-2.3.2.post1-py3-none-any.whl"
             }
         ]
     },
@@ -1152,145 +1144,67 @@
                         "zoom user id",
                         "email"
                     ],
-                    "value_list": [],
                     "default": "me",
-                    "order": 0,
-                    "name": "user_id",
-                    "id": 1,
-                    "param_name": "user_id",
-                    "nameError": false
+                    "order": 0
                 },
                 "password": {
                     "description": "Meeting password",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 1,
-                    "name": "password",
-                    "id": 2,
-                    "param_name": "password",
-                    "nameError": false
+                    "order": 1
                 },
                 "gen_password": {
                     "description": "Auto generate meeting password",
                     "data_type": "boolean",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "default": "",
-                    "order": 2,
-                    "name": "gen_password",
-                    "id": 3,
-                    "param_name": "gen_password",
-                    "nameError": false
+                    "order": 2
                 },
                 "waiting_room": {
                     "description": "Enable waiting room",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
-                    "contains": [],
                     "value_list": [
                         "None",
                         "True",
                         "False"
                     ],
                     "default": "None",
-                    "order": 3,
-                    "name": "waiting_room",
-                    "id": 4,
-                    "param_name": "waiting_room",
-                    "nameError": false
+                    "order": 3
                 },
                 "topic": {
                     "description": "Topic of meeting",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 4,
-                    "name": "topic",
-                    "id": 5,
-                    "param_name": "topic",
-                    "nameError": false
+                    "order": 4
                 },
                 "agenda": {
                     "description": "Agenda of meeting",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 5,
-                    "name": "agenda",
-                    "id": 6,
-                    "param_name": "agenda",
-                    "nameError": false
+                    "order": 5
                 },
                 "alternative_hosts": {
-                    "description": "A semicolon-separated list of the meeting's alternative hosts' email addresses or IDs.",
+                    "description": "A semicolon-separated list of the meeting's alternative hosts' email addresses or IDs",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 6,
-                    "name": "alternative_hosts",
-                    "id": 7,
-                    "param_name": "alternative_hosts",
-                    "nameError": false
+                    "order": 6
                 },
                 "continuous_meeting_chat": {
                     "description": "Whether to enable the Enable continuous meeting chat setting",
                     "data_type": "boolean",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
                     "default": false,
-                    "order": 7,
-                    "name": "continuous_meeting_chat",
-                    "id": 8,
-                    "param_name": "continuous_meeting_chat",
-                    "nameError": false
+                    "order": 7
                 },
                 "auto_recording": {
-                    "description": "The automatic recording settings.  local - Record the meeting locally. cloud - Record the meeting to the cloud. none - Auto-recording disabled.",
+                    "description": "The automatic recording settings.  local - Record the meeting locally. cloud - Record the meeting to the cloud. none - Auto-recording disabled",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
                     "value_list": [
                         "none",
                         "cloud",
                         "local"
                     ],
                     "default": "none",
-                    "order": 8,
-                    "name": "auto_recording",
-                    "id": 9,
-                    "param_name": "auto_recording",
-                    "nameError": false
+                    "order": 8
                 },
                 "meeting_invitees": {
-                    "description": "A semicolon-separated list of the meeting's invitees.",
+                    "description": "A semicolon-separated list of the meeting's invitees",
                     "data_type": "string",
-                    "required": false,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 9,
-                    "name": "meeting_invitees",
-                    "id": 10,
-                    "param_name": "meeting_invitees",
-                    "nameError": false
+                    "order": 9
                 }
             },
             "output": [
@@ -1301,77 +1215,72 @@
                         "zoom user id",
                         "email"
                     ],
-                    "column_name": "user_id",
+                    "column_name": "User ID",
                     "column_order": 0
                 },
                 {
                     "data_path": "action_result.parameter.password",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "password",
+                    "column_name": "Password",
                     "column_order": 1
                 },
                 {
                     "data_path": "action_result.parameter.gen_password",
                     "data_type": "boolean",
-                    "contains": [],
-                    "column_name": "gen_password",
+                    "column_name": "Gen Password",
                     "column_order": 2
                 },
                 {
                     "data_path": "action_result.parameter.waiting_room",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "waiting_room",
+                    "column_name": "Waiting Room",
                     "column_order": 3
                 },
                 {
                     "data_path": "action_result.parameter.topic",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "topic",
+                    "column_name": "Topic",
                     "column_order": 4
                 },
                 {
                     "data_path": "action_result.parameter.agenda",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "agenda",
+                    "column_name": "Agenda",
                     "column_order": 5
                 },
                 {
                     "data_path": "action_result.parameter.alternative_hosts",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "alternative_hosts",
+                    "column_name": "Alternative Hosts",
                     "column_order": 6
                 },
                 {
                     "data_path": "action_result.parameter.continuous_meeting_chat",
                     "data_type": "boolean",
-                    "contains": [],
-                    "column_name": "continuous_meeting_chat",
+                    "column_name": "Continuous Meeting Chat",
                     "column_order": 7
                 },
                 {
                     "data_path": "action_result.parameter.auto_recording",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "auto_recording",
+                    "column_name": "Auto Recording",
                     "column_order": 8
                 },
                 {
                     "data_path": "action_result.parameter.meeting_invitees",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "meeting_invitees",
+                    "column_name": "Meeting Invitees",
                     "column_order": 9
                 },
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 10
+                    "column_name": "Status",
+                    "column_order": 10,
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -2243,16 +2152,8 @@
                 "input_file": "wheels/py3/PyJWT-2.4.0-py3-none-any.whl"
             },
             {
-                "module": "beautifulsoup4",
-                "input_file": "wheels/py3/beautifulsoup4-4.9.1-py3-none-any.whl"
-            },
-            {
                 "module": "random_password_generator",
                 "input_file": "wheels/py3/random_password_generator-2.1.0-py3-none-any.whl"
-            },
-            {
-                "module": "soupsieve",
-                "input_file": "wheels/py3/soupsieve-2.5-py3-none-any.whl"
             }
         ]
     }

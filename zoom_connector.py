@@ -1,6 +1,6 @@
 # File: zoom_connector.py
 #
-# Copyright (c) 2021-2023 Splunk Inc.
+# Copyright (c) 2021-2024 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -246,7 +246,7 @@ class ZoomConnector(BaseConnector):
         is_waiting_room_updated = waiting_room != 'None'
         is_req_password_sched_updated = req_password_sched != 'None'  # pragma: allowlist secret
         is_req_password_inst = req_password_inst != 'None'  # pragma: allowlist secret
-        if not(pmi_password or is_waiting_room_updated or is_req_password_sched_updated or is_req_password_inst):
+        if not (pmi_password or is_waiting_room_updated or is_req_password_sched_updated or is_req_password_inst):
             return action_result.set_status(phantom.APP_ERROR, 'No settings were selected for update')
 
         data = {}
@@ -273,7 +273,7 @@ class ZoomConnector(BaseConnector):
             return action_result.get_status()
 
         action_result.update_summary({
-            'pmi_password': ('Not Updated' if not(pmi_password) else pmi_password),
+            'pmi_password': ('Not Updated' if not (pmi_password) else pmi_password),
             'waiting_room': ('Not Updated' if waiting_room == 'None' else waiting_room),
             'require_password_for_instant_meetings': ('Not Updated' if req_password_inst == 'None'  # pragma: allowlist secret
                                                       else req_password_inst),
@@ -337,26 +337,26 @@ class ZoomConnector(BaseConnector):
         for key, value in input_param_dict.items():
             if value:
                 data[key] = value
-        
+
         data['settings'] = {}
 
         if waiting_room != 'None':
             data['settings'] = data['settings'] | {'waiting_room': (waiting_room == 'True')}
-            
+
         if alternative_hosts != 'None':
-            data['settings'] =  data['settings'] | {'alternative_hosts': alternative_hosts,
+            data['settings'] = data['settings'] | {'alternative_hosts': alternative_hosts,
                                'alternative_hosts_email_notification': True}
-            
+
         if continuous_meeting_chat:
-            data['settings'] =  data['settings'] | {'continuous_meeting_chat': {'enable': True}}
-            
+            data['settings'] = data['settings'] | {'continuous_meeting_chat': {'enable': True}}
+
         if auto_recording:
-            data['settings'] =  data['settings'] | {'auto_recording': auto_recording}
-            
+            data['settings'] = data['settings'] | {'auto_recording': auto_recording}
+
         if meeting_invitees != 'None':
             attendees = [elem.strip() for elem in meeting_invitees.split(';')]
-            data['settings'] =  data['settings'] | {'meeting_invitees': [{'email': attendee} for attendee in attendees]}
-        
+            data['settings'] = data['settings'] | {'meeting_invitees': [{'email': attendee} for attendee in attendees]}
+
         ret_val, res = self._make_rest_call('/users/{}/meetings'.format(user_id), action_result, json=data, headers=None, method='post')
 
         if phantom.is_fail(ret_val):
@@ -386,7 +386,7 @@ class ZoomConnector(BaseConnector):
         password = self._get_password(param.get('password'), param.get('gen_password'))
         waiting_room = param.get('waiting_room')
 
-        if not(password or waiting_room != 'None'):
+        if not (password or waiting_room != 'None'):
             return action_result.set_status(phantom.APP_ERROR, 'Either password or waiting room must be updated')
 
         data = {}
