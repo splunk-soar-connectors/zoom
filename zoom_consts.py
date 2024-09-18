@@ -12,7 +12,7 @@
 # the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 # either express or implied. See the License for the specific language governing permissions
 # and limitations under the License.
-ERROR_MSG_UNAVAILABLE = 'Error message unavailable. Please check the asset configuration and|or action parameters'
+ERROR_MSG_UNAVAILABLE = "Error message unavailable. Please check the asset configuration and|or action parameters"
 DEFAULT_TIMEOUT = 30  # seconds
 GET_TOKEN_URL = "https://zoom.us/oauth/token"
 INVALID_TOKEN_MSG_LIST = ["Invalid access token.", "Access token is expired."]
