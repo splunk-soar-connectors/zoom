@@ -343,19 +343,27 @@ class ZoomConnector(BaseConnector):
         if waiting_room != 'None':
             data['settings'] = data['settings'] | {'waiting_room': (waiting_room == 'True')}
 
-        if alternative_hosts != 'None':
-            data['settings'] = data['settings'] | {'alternative_hosts': alternative_hosts,
+        if alternative_hosts:
+            hosts = [elem.strip() for elem in alternative_hosts.split(',') if elem.strip()]
+            if hosts:
+                data['settings'] = data['settings'] | {'alternative_hosts': ";".join(hosts),
                                'alternative_hosts_email_notification': True}
 
+        enable_continuous_meeting_chat = False
         if continuous_meeting_chat:
-            data['settings'] = data['settings'] | {'continuous_meeting_chat': {'enable': True}}
+            enable_continuous_meeting_chat = True
+        data['settings'] = data['settings'] | {'continuous_meeting_chat': {'enable': enable_continuous_meeting_chat}}
+
 
         if auto_recording:
-            data['settings'] = data['settings'] | {'auto_recording': auto_recording}
+            if auto_recording.lower() not in ['cloud','none','native']:
+                return action_result.set_status(phantom.APP_ERROR, 'Please enter a valid value for auto_recording from [cloud, native, none]')
+            data['settings'] = data['settings'] | {'auto_recording': auto_recording.lower()}
 
-        if meeting_invitees != 'None':
-            attendees = [elem.strip() for elem in meeting_invitees.split(';')]
-            data['settings'] = data['settings'] | {'meeting_invitees': [{'email': attendee} for attendee in attendees]}
+        if meeting_invitees:
+            attendees = [elem.strip() for elem in meeting_invitees.split(',') if elem.strip()]
+            if attendees:
+                data['settings'] = data['settings'] | {'meeting_invitees': [{'email': attendee} for attendee in attendees]}
 
         ret_val, res = self._make_rest_call('/users/{}/meetings'.format(user_id), action_result, json=data, headers=None, method='post')
 
