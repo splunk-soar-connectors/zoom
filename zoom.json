@@ -1131,7 +1131,7 @@
             "action": "create meeting",
             "identifier": "create_meeting",
             "description": "Create zoom meeting",
-            "verbose": "In <b>user_id</b> parameter, user ID or user's email can be used. Also, we can pass the <b>me</b> value for current user.",
+            "verbose": "In <b>user_id</b> parameter, user ID or user's email can be used. Also, we can pass the <b>me</b> value for current user. The parameter auto_recording would set the place to save the meeting recording: local - Record the meeting locally, cloud - Record the meeting to the cloud, none - Auto-recording disabled.",
             "type": "generic",
             "read_only": false,
             "parameters": {
@@ -1185,13 +1185,13 @@
                     "order": 6
                 },
                 "continuous_meeting_chat": {
-                    "description": "Whether to enable the Enable continuous meeting chat setting",
+                    "description": "Whether to enable the continuous meeting chat setting",
                     "data_type": "boolean",
                     "default": false,
                     "order": 7
                 },
                 "auto_recording": {
-                    "description": "The automatic recording settings.  local - Record the meeting locally. cloud - Record the meeting to the cloud. none - Auto-recording disabled",
+                    "description": "The automatic recording settings",
                     "data_type": "string",
                     "value_list": [
                         "none",
@@ -1276,7 +1276,7 @@
                     "data_path": "action_result.data.*.id",
                     "data_type": "numeric",
                     "example_values": [
-                        97648930957
+                        99999999999
                     ]
                 },
                 {
@@ -1290,7 +1290,7 @@
                     "data_path": "action_result.data.*.uuid",
                     "data_type": "string",
                     "example_values": [
-                        "zyEiA/XnQ4m/J4xkWwC6VA=="
+                        "ztest22test/testWwC6VA=="
                     ]
                 },
                 {
@@ -1311,7 +1311,7 @@
                     "data_path": "action_result.data.*.host_id",
                     "data_type": "string",
                     "example_values": [
-                        "4Z9ntM-VQnuHjlZg8NcQSA"
+                        "22test-TeSTiNgZg8NTeST"
                     ]
                 },
                 {
@@ -1325,7 +1325,7 @@
                     "data_path": "action_result.data.*.join_url",
                     "data_type": "string",
                     "example_values": [
-                        "https://zoom.us/j/97648930957"
+                        "https://zoom.us/T/99999999999"
                     ]
                 },
                 {
@@ -1565,7 +1565,7 @@
                     "data_path": "action_result.data.*.settings.global_dial_in_numbers.*.number",
                     "data_type": "string",
                     "example_values": [
-                        "+1 669 900 6833"
+                        "+1 000 000 0000"
                     ]
                 },
                 {
@@ -1728,7 +1728,7 @@
                     "data_path": "action_result.data.*.start_url",
                     "data_type": "string",
                     "example_values": [
-                        "https://zoom.us/s/97648930957?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJpc3MiOiJ3ZWIiLCJjbHQiOjAsIm1udW0iOiI5NzY0ODkzMDk1NyIsImF1ZCI6ImNsaWVudHNtIiwidWlkIjoiNFo5bnRNLVZRbnVIamxaZzhOY1FTQSIsInppZCI6ImVlNDRiOTgwNDA2OTRhODY4YjFhNjQzZGJmYmY3ZDk5Iiwic2siOiIwIiwic3R5IjoxMDAsIndjZCI6ImF3MSIsImV4cCI6MTcyNTk3NjEwMSwiaWF0IjoxNzI1OTY4OTAxLCJhaWQiOiJXdUFCQnJ3ZlFqZXNRbGlXT3VYU3BRIiwiY2lkIjoiIn0.VWdUODAJ_2wo6TxIO21m1n8xDSGloZX2Ho8biVm_WBU"
+                        "https://zoom.us/s/9999999999?inv=eyTeST23tEStKV1QiLCJzdiI6TeStMDAwTestInptestrbSITEsTt22TeSttEstFs23TeIkhTMjU2In0.eyJpc3MiOiJ3ZWIiLCJjbHQiOjAsIm1udW0iOiI5NzY0ODkzMDk1NyIsImF1ZCI6ImNsaWVudHNtIiwidWlkIjoiNFo5TestLVZRbnVIamxaZzhOY1FTQSIsTestZCI6ImVlNDRiOTgwNDA2OTRhODY4YjFhNjQzZGJmYmY3ZDk5ITestsiOiIwITest3R5IjoxMDAsIndjZCI6ImTestIsImV4cCI6MTTestk3NjEwMSwiaWF0IjoxTestOTY4OTAxLCJhTestOiJXdUFCQnJ3TestZXNRbGlXT3VYU3TestwiY2lkITestn0.VWdUODAJ_TestTxIO21m1n8xTestoZX2Ho8biVm_WBU"
                     ]
                 },
                 {

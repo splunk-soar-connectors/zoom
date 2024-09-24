@@ -329,7 +329,7 @@ class ZoomConnector(BaseConnector):
         topic = param.get("topic")
         agenda = param.get("agenda")
         alternative_hosts = param.get("alternative_hosts")
-        continuous_meeting_chat = param.get("continuous_meeting_chat")
+        continuous_meeting_chat = param.get("continuous_meeting_chat", False)
         auto_recording = param.get("auto_recording")
         meeting_invitees = param.get("meeting_invitees")
 
@@ -351,10 +351,7 @@ class ZoomConnector(BaseConnector):
             if hosts:
                 data["settings"] = data["settings"] | {"alternative_hosts": ";".join(hosts), "alternative_hosts_email_notification": True}
 
-        enable_continuous_meeting_chat = False
-        if continuous_meeting_chat:
-            enable_continuous_meeting_chat = True
-        data["settings"] = data["settings"] | {"continuous_meeting_chat": {"enable": enable_continuous_meeting_chat}}
+        data["settings"] = data["settings"] | {"continuous_meeting_chat": {"enable": continuous_meeting_chat}}
 
         if auto_recording:
             if auto_recording.lower() not in ["cloud", "none", "native"]:
