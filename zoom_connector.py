@@ -349,8 +349,7 @@ class ZoomConnector(BaseConnector):
         if alternative_hosts:
             hosts = [elem.strip() for elem in alternative_hosts.split(",") if elem.strip()]
             if hosts:
-                data["settings"]["alternative_hosts"] = ";".join(hosts)
-                data["settings"]["alternative_hosts_email_notification"] = True
+                data["settings"].update({"alternative_hosts": ";".join(hosts), "alternative_hosts_email_notification": True})
 
         data["settings"]["continuous_meeting_chat"] = {"enable": continuous_meeting_chat}
 
