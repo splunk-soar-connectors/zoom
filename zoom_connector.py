@@ -377,10 +377,10 @@ class ZoomConnector(BaseConnector):
                 "meeting_created": True,
                 "password": password if password else "Not Added",
                 "waiting_room": ("Not Added" if waiting_room == "None" else waiting_room),
-                "alternative_hosts": ("Not Added" if alternative_hosts == "None" else alternative_hosts),
+                "alternative_hosts": ("Not Added" if not alternative_hosts else alternative_hosts),
                 "continuous_meeting_chat": ("Not Added" if not continuous_meeting_chat else str(continuous_meeting_chat)),
                 "auto_recording": ("Not Added" if auto_recording.lower() == "none" else auto_recording),
-                "meeting_invitees": ("Not Added" if meeting_invitees == "None" else meeting_invitees),
+                "meeting_invitees": ("Not Added" if not meeting_invitees else meeting_invitees),
             }
         )
 
