@@ -344,24 +344,25 @@ class ZoomConnector(BaseConnector):
         data["settings"] = {}
 
         if waiting_room != "None":
-            data["settings"] = data["settings"] | {"waiting_room": (waiting_room == "True")}
+            data["settings"]["waiting_room"] = waiting_room == "True"
 
         if alternative_hosts:
             hosts = [elem.strip() for elem in alternative_hosts.split(",") if elem.strip()]
             if hosts:
-                data["settings"] = data["settings"] | {"alternative_hosts": ";".join(hosts), "alternative_hosts_email_notification": True}
+                data["settings"]["alternative_hosts"] = ";".join(hosts)
+                data["settings"]["alternative_hosts_email_notification"] = True
 
-        data["settings"] = data["settings"] | {"continuous_meeting_chat": {"enable": continuous_meeting_chat}}
+        data["settings"]["continuous_meeting_chat"] = {"enable": continuous_meeting_chat}
 
         if auto_recording:
             if auto_recording.lower() not in ["cloud", "none", "native"]:
                 return action_result.set_status(phantom.APP_ERROR, "Please enter a valid value for auto_recording from [cloud, native, none]")
-            data["settings"] = data["settings"] | {"auto_recording": auto_recording.lower()}
+            data["settings"]["auto_recording"] = auto_recording.lower()
 
         if meeting_invitees:
             attendees = [elem.strip() for elem in meeting_invitees.split(",") if elem.strip()]
             if attendees:
-                data["settings"] = data["settings"] | {"meeting_invitees": [{"email": attendee} for attendee in attendees]}
+                data["settings"]["meeting_invitees"] = [{"email": attendee} for attendee in attendees]
 
         ret_val, res = self._make_rest_call("/users/{}/meetings".format(user_id), action_result, json=data, headers=None, method="post")
 
@@ -378,7 +379,7 @@ class ZoomConnector(BaseConnector):
                 "waiting_room": ("Not Added" if waiting_room == "None" else waiting_room),
                 "alternative_hosts": ("Not Added" if alternative_hosts == "None" else alternative_hosts),
                 "continuous_meeting_chat": ("Not Added" if not continuous_meeting_chat else str(continuous_meeting_chat)),
-                "auto_recording": ("Not Added" if auto_recording == "none" else auto_recording),
+                "auto_recording": ("Not Added" if auto_recording.lower() == "none" else auto_recording),
                 "meeting_invitees": ("Not Added" if meeting_invitees == "None" else meeting_invitees),
             }
         )
