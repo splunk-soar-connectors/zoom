@@ -378,7 +378,7 @@ class ZoomConnector(BaseConnector):
                 "waiting_room": ("Not Added" if waiting_room == "None" else waiting_room),
                 "alternative_hosts": ("Not Added" if not alternative_hosts else alternative_hosts),
                 "continuous_meeting_chat": ("Not Added" if not continuous_meeting_chat else str(continuous_meeting_chat)),
-                "auto_recording": ("Not Added" if auto_recording.lower() == "none" else auto_recording),
+                "auto_recording": ("Not Added" if auto_recording and auto_recording.lower() == "none" else auto_recording),
                 "meeting_invitees": ("Not Added" if not meeting_invitees else meeting_invitees),
             }
         )
