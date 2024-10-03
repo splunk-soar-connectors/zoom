@@ -15,7 +15,7 @@
     "utctime_updated": "2022-08-18T22:38:54.000000Z",
     "package_name": "phantom_zoom",
     "main_module": "zoom_connector.py",
-    "min_phantom_version": "6.1.1",
+    "min_phantom_version": "6.2.1",
     "fips_compliant": true,
     "app_wizard_version": "1.0.0",
     "latest_tested_versions": [
@@ -1214,63 +1214,95 @@
                     "contains": [
                         "zoom user id",
                         "email"
-                    ],
-                    "column_name": "User ID",
-                    "column_order": 0
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.password",
-                    "data_type": "string",
-                    "column_name": "Password",
-                    "column_order": 1
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.parameter.gen_password",
                     "data_type": "boolean",
                     "column_name": "Gen Password",
-                    "column_order": 2
+                    "column_order": 4
                 },
                 {
                     "data_path": "action_result.parameter.waiting_room",
                     "data_type": "string",
                     "column_name": "Waiting Room",
-                    "column_order": 3
+                    "column_order": 5
                 },
                 {
                     "data_path": "action_result.parameter.topic",
                     "data_type": "string",
                     "column_name": "Topic",
-                    "column_order": 4
+                    "column_order": 6
                 },
                 {
                     "data_path": "action_result.parameter.agenda",
                     "data_type": "string",
                     "column_name": "Agenda",
-                    "column_order": 5
+                    "column_order": 7
                 },
                 {
                     "data_path": "action_result.parameter.alternative_hosts",
                     "data_type": "string",
                     "column_name": "Alternative Hosts",
-                    "column_order": 6
+                    "column_order": 8
                 },
                 {
                     "data_path": "action_result.parameter.continuous_meeting_chat",
                     "data_type": "boolean",
                     "column_name": "Continuous Meeting Chat",
-                    "column_order": 7
+                    "column_order": 9
                 },
                 {
                     "data_path": "action_result.parameter.auto_recording",
                     "data_type": "string",
                     "column_name": "Auto Recording",
-                    "column_order": 8
+                    "column_order": 10
                 },
                 {
                     "data_path": "action_result.parameter.meeting_invitees",
                     "data_type": "string",
                     "column_name": "Meeting Invitees",
-                    "column_order": 9
+                    "column_order": 11
+                },
+                {
+                    "data_path": "action_result.data.*.host_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "22test-TeSTiNgZg8NTeST"
+                    ],
+                    "column_name": "Host ID",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.summary.meeting_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "97648930957"
+                    ],
+                    "column_name": "Meeting ID",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.join_url",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://zoom.us/T/99999999999"
+                    ],
+                    "column_name": "Join URL",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.password",
+                    "data_type": "string",
+                    "example_values": [
+                        "I2q8w&DSw"
+                    ],
+                    "column_name": "Passcode",
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.id",
@@ -1308,10 +1340,31 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.host_id",
+                    "data_path": "action_result.data.*.agenda",
                     "data_type": "string",
                     "example_values": [
-                        "22test-TeSTiNgZg8NTeST"
+                        "This is test agenda for create meeting action. This is test agenda for create meeting action. This is test agenda for create meeting action."
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.h323_password",
+                    "data_type": "string",
+                    "example_values": [
+                        "800645960"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.pstn_password",
+                    "data_type": "string",
+                    "example_values": [
+                        "800645960"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.encrypted_password",
+                    "data_type": "string",
+                    "example_values": [
+                        "uGBNumrMF6BPFw85hBNTApbDBeO7aI.1"
                     ]
                 },
                 {
@@ -1319,13 +1372,6 @@
                     "data_type": "numeric",
                     "example_values": [
                         60
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.join_url",
-                    "data_type": "string",
-                    "example_values": [
-                        "https://zoom.us/T/99999999999"
                     ]
                 },
                 {
@@ -1768,13 +1814,6 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.summary.meeting_id",
-                    "data_type": "string",
-                    "example_values": [
-                        "97648930957"
-                    ]
-                },
-                {
                     "data_path": "action_result.summary.waiting_room",
                     "data_type": "string",
                     "example_values": [
@@ -1825,7 +1864,7 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "column_name": "Status",
-                    "column_order": 10,
+                    "column_order": 12,
                     "example_values": [
                         "success",
                         "failed"
