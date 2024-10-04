@@ -1275,7 +1275,10 @@
                         "22test-TeSTiNgZg8NTeST"
                     ],
                     "column_name": "Host ID",
-                    "column_order": 0
+                    "column_order": 0,
+                    "contains":[
+                        "zoom user id"
+                    ]
                 },
                 {
                     "data_path": "action_result.summary.meeting_id",
@@ -1284,7 +1287,10 @@
                         "97648930957"
                     ],
                     "column_name": "Meeting ID",
-                    "column_order": 1
+                    "column_order": 1,
+                    "contains":[
+                        "zoom meeting id"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.join_url",
