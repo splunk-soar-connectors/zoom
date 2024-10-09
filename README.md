@@ -373,6 +373,10 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 **waiting_room** |  required  | Enable waiting room | string | 
 **topic** |  optional  | Topic of meeting | string | 
 **agenda** |  optional  | Agenda of meeting | string | 
+**alternative_hosts** |  optional  | A semicolon-separated list of the meeting's alternative hosts' email addresses or IDs. | string | 
+**continuous_meeting_chat** |  optional  | Whether to enable the Enable continuous meeting chat setting | boolean | 
+**auto_recording** |  optional  | The automatic recording settings. | string | 
+**meeting_invitees** |  optional  | A semicolon-separated list of the meeting's attendees email addresses | string | 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
