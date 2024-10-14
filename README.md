@@ -2,18 +2,27 @@
 # Zoom
 
 Publisher: Splunk  
-Connector Version: 3.0.0  
+Connector Version: 3.1.0  
 Product Vendor: Zoom  
 Product Name: Zoom Meetings  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 6.1.1  
+Minimum Product Version: 6.2.1  
 
 The app integrates with Zoom Meetings API to perform investigative and generic actions
 
 [comment]: # " File: README.md"
-[comment]: # "  Copyright (c) 2021-2023 Splunk Inc."
+[comment]: # "  Copyright (c) 2021-2024 Splunk Inc."
 [comment]: # ""
-[comment]: # "  Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
+[comment]: # "Licensed under the Apache License, Version 2.0 (the 'License');"
+[comment]: # "you may not use this file except in compliance with the License."
+[comment]: # "You may obtain a copy of the License at"
+[comment]: # ""
+[comment]: # "    http://www.apache.org/licenses/LICENSE-2.0"
+[comment]: # ""
+[comment]: # "Unless required by applicable law or agreed to in writing, software distributed under"
+[comment]: # "the License is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,"
+[comment]: # "either express or implied. See the License for the specific language governing permissions"
+[comment]: # "and limitations under the License."
 [comment]: # ""
 ### SDK and SDK Licensing details for the app
 
@@ -362,7 +371,7 @@ Create zoom meeting
 Type: **generic**  
 Read only: **False**
 
-In <b>user_id</b> parameter, user ID or user's email can be used. Also, we can pass the <b>me</b> value for current user.
+In <b>user_id</b> parameter, user ID or user's email can be used. Also, we can pass the <b>me</b> value for current user. The parameter auto_recording would set the place to save the meeting recording: local - Record the meeting locally, cloud - Record the meeting to the cloud, none - Auto-recording disabled.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
@@ -373,77 +382,109 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 **waiting_room** |  required  | Enable waiting room | string | 
 **topic** |  optional  | Topic of meeting | string | 
 **agenda** |  optional  | Agenda of meeting | string | 
+**alternative_hosts** |  optional  | Comma-separated list of the meeting's alternative hosts' email addresses or IDs | string | 
+**continuous_meeting_chat** |  optional  | Whether to enable the continuous meeting chat setting | boolean | 
+**auto_recording** |  optional  | The automatic recording settings | string | 
+**meeting_invitees** |  optional  | Comma-separated list of the meeting's invitees | string | 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.status | string |  |   success  failed 
-action_result.parameter.agenda | string |  |   Test Agenda 
-action_result.parameter.gen_password | boolean |  |   None  True  False 
-action_result.parameter.password | string |  |   testPass1 
-action_result.parameter.topic | string |  |   Test Topic 
 action_result.parameter.user_id | string |  `zoom user id`  `email`  |  
-action_result.parameter.waiting_room | string |  |   None 
-action_result.data.\*.agenda | string |  |  
-action_result.data.\*.created_at | string |  |  
-action_result.data.\*.duration | numeric |  |  
-action_result.data.\*.encrypted_password | string |  |  
-action_result.data.\*.h323_password | string |  |  
-action_result.data.\*.host_email | string |  |  
-action_result.data.\*.host_id | string |  `zoom user id`  `email`  |   A0BiCtoDEFGHIzYaZcLdsA 
-action_result.data.\*.id | numeric |  |  
-action_result.data.\*.join_url | string |  `url`  |  
-action_result.data.\*.password | string |  |  
-action_result.data.\*.pre_schedule | boolean |  |  
-action_result.data.\*.pstn_password | string |  |  
-action_result.data.\*.settings.allow_multiple_devices | boolean |  |  
-action_result.data.\*.settings.alternative_host_update_polls | boolean |  |  
-action_result.data.\*.settings.alternative_hosts | string |  |  
-action_result.data.\*.settings.alternative_hosts_email_notification | boolean |  |  
-action_result.data.\*.settings.approval_type | numeric |  |  
-action_result.data.\*.settings.approved_or_denied_countries_or_regions.enable | boolean |  |  
-action_result.data.\*.settings.audio | string |  |  
-action_result.data.\*.settings.auto_recording | string |  |  
-action_result.data.\*.settings.breakout_room.enable | boolean |  |  
-action_result.data.\*.settings.close_registration | boolean |  |  
-action_result.data.\*.settings.cn_meeting | boolean |  |  
-action_result.data.\*.settings.device_testing | boolean |  |  
-action_result.data.\*.settings.email_notification | boolean |  |  
-action_result.data.\*.settings.enable_dedicated_group_chat | boolean |  |   True  False 
-action_result.data.\*.settings.encryption_type | string |  |  
-action_result.data.\*.settings.enforce_login | boolean |  |  
-action_result.data.\*.settings.enforce_login_domains | string |  |  
-action_result.data.\*.settings.focus_mode | boolean |  |  
-action_result.data.\*.settings.host_save_video_order | boolean |  |  
-action_result.data.\*.settings.host_video | boolean |  |  
-action_result.data.\*.settings.in_meeting | boolean |  |  
+action_result.parameter.password | string |  |  
+action_result.parameter.gen_password | boolean |  |  
+action_result.parameter.waiting_room | string |  |  
+action_result.parameter.topic | string |  |  
+action_result.parameter.agenda | string |  |  
+action_result.parameter.alternative_hosts | string |  |  
+action_result.parameter.continuous_meeting_chat | boolean |  |  
+action_result.parameter.auto_recording | string |  |  
+action_result.parameter.meeting_invitees | string |  |  
+action_result.data.\*.host_id | string |  `zoom user id`  |   22test-TeSTiNgZg8NTeST 
+action_result.summary.meeting_id | string |  `zoom meeting id`  |   97648930957 
+action_result.data.\*.join_url | string |  |   https://zoom.us/T/99999999999 
+action_result.data.\*.password | string |  |   I2q8w&DSw 
+action_result.data.\*.id | numeric |  |   99999999999 
+action_result.data.\*.type | numeric |  |   2 
+action_result.data.\*.uuid | string |  |   ztest22test/testWwC6VA== 
+action_result.data.\*.topic | string |  |   Zoom Meeting 
+action_result.data.\*.status | string |  |   waiting 
+action_result.data.\*.agenda | string |  |   This is test agenda for create meeting action. This is test agenda for create meeting action. This is test agenda for create meeting action. 
+action_result.data.\*.h323_password | string |  |   800645960 
+action_result.data.\*.pstn_password | string |  |   800645960 
+action_result.data.\*.encrypted_password | string |  |   uGBNumrMF6BPFw85hBNTApbDBeO7aI.1 
+action_result.data.\*.duration | numeric |  |   60 
+action_result.data.\*.settings.audio | string |  |   both 
+action_result.data.\*.settings.use_pmi | boolean |  |   True  False 
 action_result.data.\*.settings.jbh_time | numeric |  |  
-action_result.data.\*.settings.join_before_host | boolean |  |  
-action_result.data.\*.settings.meeting_authentication | boolean |  |  
-action_result.data.\*.settings.mute_upon_entry | boolean |  |  
-action_result.data.\*.settings.participant_video | boolean |  |  
-action_result.data.\*.settings.private_meeting | boolean |  |  
-action_result.data.\*.settings.registrants_confirmation_email | boolean |  |  
-action_result.data.\*.settings.registrants_email_notification | boolean |  |  
-action_result.data.\*.settings.request_permission_to_unmute_participants | boolean |  |  
-action_result.data.\*.settings.show_share_button | boolean |  |  
-action_result.data.\*.settings.use_pmi | boolean |  |  
-action_result.data.\*.settings.waiting_room | boolean |  |  
-action_result.data.\*.settings.watermark | boolean |  |  
-action_result.data.\*.start_time | string |  |  
-action_result.data.\*.start_url | string |  |  
-action_result.data.\*.status | string |  |  
-action_result.data.\*.timezone | string |  |  
-action_result.data.\*.topic | string |  |  
-action_result.data.\*.type | numeric |  |  
-action_result.data.\*.uuid | string |  |  
+action_result.data.\*.settings.watermark | boolean |  |   True  False 
+action_result.data.\*.settings.cn_meeting | boolean |  |   True  False 
+action_result.data.\*.settings.focus_mode | boolean |  |   True  False 
+action_result.data.\*.settings.host_video | boolean |  |   True  False 
+action_result.data.\*.settings.in_meeting | boolean |  |   True  False 
+action_result.data.\*.settings.waiting_room | boolean |  |   True  False 
+action_result.data.\*.settings.approval_type | numeric |  |   2 
+action_result.data.\*.settings.breakout_room.enable | boolean |  |   True  False 
+action_result.data.\*.settings.enforce_login | boolean |  |   True  False 
+action_result.data.\*.settings.auto_recording | string |  |   cloud 
+action_result.data.\*.settings.device_testing | boolean |  |   True  False 
+action_result.data.\*.settings.show_join_info | boolean |  |   True  False 
+action_result.data.\*.settings.encryption_type | string |  |   enhanced_encryption 
+action_result.data.\*.settings.mute_upon_entry | boolean |  |   True  False 
+action_result.data.\*.settings.private_meeting | boolean |  |   True  False 
+action_result.data.\*.settings.internal_meeting | boolean |  |   True  False 
+action_result.data.\*.settings.join_before_host | boolean |  |   True  False 
+action_result.data.\*.settings.alternative_hosts | string |  |   test@test.com 
+action_result.data.\*.settings.participant_video | boolean |  |   True  False 
+action_result.data.\*.settings.show_share_button | boolean |  |   True  False 
+action_result.data.\*.settings.close_registration | boolean |  |   True  False 
+action_result.data.\*.settings.email_notification | boolean |  |   True  False 
+action_result.data.\*.settings.question_and_answer.enable | boolean |  |   True  False 
+action_result.data.\*.settings.enforce_login_domains | string |  |  
+action_result.data.\*.settings.host_save_video_order | boolean |  |   True  False 
+action_result.data.\*.settings.allow_multiple_devices | boolean |  |   True  False 
+action_result.data.\*.settings.global_dial_in_numbers.\*.city | string |  |   San Jose 
+action_result.data.\*.settings.global_dial_in_numbers.\*.type | string |  |   toll 
+action_result.data.\*.settings.global_dial_in_numbers.\*.number | string |  |   +1 000 000 0000 
+action_result.data.\*.settings.global_dial_in_numbers.\*.country | string |  |   US 
+action_result.data.\*.settings.global_dial_in_numbers.\*.country_name | string |  |   US 
+action_result.data.\*.settings.meeting_authentication | boolean |  |   True  False 
+action_result.data.\*.settings.continuous_meeting_chat.enable | boolean |  |   True  False 
+action_result.data.\*.settings.continuous_meeting_chat.channel_id | string |  |   web_sch_47c967faa78b49fc992eb081f698e3e5 
+action_result.data.\*.settings.continuous_meeting_chat.auto_add_invited_external_users | boolean |  |   True  False 
+action_result.data.\*.settings.push_change_to_calendar | boolean |  |   True  False 
+action_result.data.\*.settings.email_in_attendee_report | boolean |  |   True  False 
+action_result.data.\*.settings.auto_start_meeting_summary | boolean |  |   True  False 
+action_result.data.\*.settings.enable_dedicated_group_chat | boolean |  |   True  False 
+action_result.data.\*.settings.participant_focused_meeting | boolean |  |   True  False 
+action_result.data.\*.settings.sign_language_interpretation.enable | boolean |  |   True  False 
+action_result.data.\*.settings.alternative_host_update_polls | boolean |  |   True  False 
+action_result.data.\*.settings.registrants_confirmation_email | boolean |  |   True  False 
+action_result.data.\*.settings.registrants_email_notification | boolean |  |   True  False 
+action_result.data.\*.settings.auto_start_ai_companion_questions | boolean |  |   True  False 
+action_result.data.\*.settings.alternative_hosts_email_notification | boolean |  |   True  False 
+action_result.data.\*.settings.approved_or_denied_countries_or_regions.enable | boolean |  |   True  False 
+action_result.data.\*.settings.request_permission_to_unmute_participants | boolean |  |   True  False 
+action_result.data.\*.timezone | string |  |   Asia/Kolkata 
+action_result.data.\*.start_url | string |  |   https://zoom.us/s/9999999999?inv=eyTeST23tEStKV1QiLCJzdiI6TeStMDAwTestInptestrbSITEsTt22TeSttEstFs23TeIkhTMjU2In0.eyJpc3MiOiJ3ZWIiLCJjbHQiOjAsIm1udW0iOiI5NzY0ODkzMDk1NyIsImF1ZCI6ImNsaWVudHNtIiwidWlkIjoiNFo5TestLVZRbnVIamxaZzhOY1FTQSIsTestZCI6ImVlNDRiOTgwNDA2OTRhODY4YjFhNjQzZGJmYmY3ZDk5ITestsiOiIwITest3R5IjoxMDAsIndjZCI6ImTestIsImV4cCI6MTTestk3NjEwMSwiaWF0IjoxTestOTY4OTAxLCJhTestOiJXdUFCQnJ3TestZXNRbGlXT3VYU3TestwiY2lkITestn0.VWdUODAJ_TestTxIO21m1n8xTestoZX2Ho8biVm_WBU 
+action_result.data.\*.created_at | string |  |   2024-09-10T11:48:20Z 
+action_result.data.\*.host_email | string |  |   test@test.in 
+action_result.data.\*.start_time | string |  |   2024-09-10T11:48:20Z 
+action_result.data.\*.pre_schedule | boolean |  |   True  False 
+action_result.summary.password | string |  |   Not Added 
+action_result.summary.waiting_room | string |  |   Not Added 
+action_result.summary.auto_recording | string |  |   cloud 
 action_result.summary.meeting_created | boolean |  |   True  False 
-action_result.summary.meeting_id | string |  `zoom meeting id`  |  
-action_result.summary.password | string |  |   testxFghbsuHndTYGF 
-action_result.summary.waiting_room | string |  |   Not Updated 
+action_result.summary.meeting_invitees | string |  |  
+action_result.summary.alternative_hosts | string |  |   test@test.com 
+action_result.summary.continuous_meeting_chat | string |  |   Not Added 
+action_result.data.\*.settings.meeting_invitees.\*.email | string |  |   test@test.com 
+action_result.status | string |  |   success  failed 
+action_result.data | string |  |  
+action_result.summary | string |  |  
 action_result.message | string |  |  
-summary.total_objects | numeric |  |   1 
-summary.total_objects_successful | numeric |  |   1   
+summary.total_objects | numeric |  |  
+summary.total_objects_successful | numeric |  |    
 
 ## action: 'get meeting'
 Get zoom meeting details

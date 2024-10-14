@@ -1,3 +1,2 @@
-beautifulsoup4==4.9.1
 pyjwt==2.4.0
 random-password-generator==2.1.0
