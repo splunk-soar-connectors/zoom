@@ -324,6 +324,7 @@ class ZoomConnector(BaseConnector):
         continuous_meeting_chat = param.get("continuous_meeting_chat", False)
         auto_recording = param.get("auto_recording")
         meeting_invitees = param.get("meeting_invitees")
+        mute_upon_entry = param.get("mute_upon_entry")
 
         data = {}
 
@@ -334,6 +335,9 @@ class ZoomConnector(BaseConnector):
                 data[key] = value
 
         data["settings"] = {}
+
+        if mute_upon_entry is not None:
+            data["settings"]["mute_upon_entry"] = mute_upon_entry
 
         if waiting_room != "None":
             data["settings"]["waiting_room"] = waiting_room == "True"
