@@ -376,6 +376,7 @@ class ZoomConnector(BaseConnector):
                 "continuous_meeting_chat": ("Not Added" if not continuous_meeting_chat else str(continuous_meeting_chat)),
                 "auto_recording": ("Not Added" if auto_recording and auto_recording.lower() == "none" else auto_recording),
                 "meeting_invitees": ("Not Added" if not meeting_invitees else meeting_invitees),
+                "mute_upon_entry": ("Not Added" if not mute_upon_entry else mute_upon_entry),
             }
         )
 
