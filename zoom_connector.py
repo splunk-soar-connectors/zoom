@@ -1,6 +1,6 @@
 # File: zoom_connector.py
 #
-# Copyright (c) 2021-2024 Splunk Inc.
+# Copyright (c) 2021-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,11 +36,9 @@ class RetVal(tuple):
 
 
 class ZoomConnector(BaseConnector):
-
     def __init__(self):
-
         # Call the BaseConnectors init first
-        super(ZoomConnector, self).__init__()
+        super().__init__()
 
         self._state = None
         self._token = None
@@ -67,25 +65,23 @@ class ZoomConnector(BaseConnector):
                 elif len(e.args) == 1:
                     error_msg = e.args[0]
         except Exception as e:
-            self.error_print("Error occurred while fetching exception information. Details: {}".format(str(e)))
+            self.error_print(f"Error occurred while fetching exception information. Details: {e!s}")
 
         if not error_code:
-            error_text = "Error Message: {}".format(error_msg)
+            error_text = f"Error Message: {error_msg}"
         else:
-            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_msg)
+            error_text = f"Error Code: {error_code}. Error Message: {error_msg}"
 
         return error_text
 
     def _process_empty_response(self, response, action_result):
-
         if response.status_code in (200, 204):
             return RetVal(phantom.APP_SUCCESS, {})
 
-        msg = "Status code: {}. Empty response and no information in the header".format(response.status_code)
+        msg = f"Status code: {response.status_code}. Empty response and no information in the header"
         return RetVal(action_result.set_status(phantom.APP_ERROR, msg), None)
 
     def _process_html_response(self, response, action_result):
-
         # A html response, treat it like an error
         status_code = response.status_code
 
@@ -101,32 +97,30 @@ class ZoomConnector(BaseConnector):
         except Exception:
             error_text = "Cannot parse error details"
 
-        message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code, unquote(error_text))
+        message = f"Status Code: {status_code}. Data from server:\n{unquote(error_text)}\n"
 
         message = message.replace("{", "{{").replace("}", "}}")
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_json_response(self, r, action_result):
-
         # Try a json parse
         try:
             resp_json = r.json()
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse JSON response. Error: {0}".format(error_message), None))
+            return RetVal(action_result.set_status(phantom.APP_ERROR, f"Unable to parse JSON response. Error: {error_message}", None))
 
         # Please specify the status codes here
         if 200 <= r.status_code < 399:
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
         # You should process the error returned in the json
-        message = "Error from server. Status Code: {0} Data from server: {1}".format(r.status_code, r.text.replace("{", "{{").replace("}", "}}"))
+        message = "Error from server. Status Code: {} Data from server: {}".format(r.status_code, r.text.replace("{", "{{").replace("}", "}}"))
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_response(self, r, action_result):
-
         # store the r_text in debug data, it will get dumped in the logs if the action fails
         if hasattr(action_result, "add_debug_data"):
             action_result.add_debug_data({"r_status_code": r.status_code})
@@ -147,7 +141,7 @@ class ZoomConnector(BaseConnector):
             return self._process_empty_response(r, action_result)
 
         # everything else is actually an error at this point
-        message = "Can't process response from server. Status Code: {0} Data from server: {1}".format(
+        message = "Can't process response from server. Status Code: {} Data from server: {}".format(
             r.status_code, r.text.replace("{", "{{").replace("}", "}}")
         )
 
@@ -165,14 +159,14 @@ class ZoomConnector(BaseConnector):
             headers = None
             url = endpoint
         else:
-            url = "{}{}".format(self._base_url, endpoint)
+            url = f"{self._base_url}{endpoint}"
         kwargs["headers"] = headers
         resp_json = None
 
         try:
             request_func = getattr(requests, method)
         except AttributeError:
-            msg = "Invalid method: {0}".format(method)
+            msg = f"Invalid method: {method}"
             self.error_print(msg)
             return RetVal(action_result.set_status(phantom.APP_ERROR, msg), resp_json)
 
@@ -191,14 +185,13 @@ class ZoomConnector(BaseConnector):
                     r = request_func(url, timeout=DEFAULT_TIMEOUT, **kwargs)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
-            message = "Error connecting to server. {0}".format(error_message)
+            message = f"Error connecting to server. {error_message}"
             self.error_print(message)
             return RetVal(action_result.set_status(phantom.APP_ERROR, message), resp_json)
 
         return self._process_response(r, action_result)
 
     def _handle_test_connectivity(self, param):
-
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         self.save_progress("Connecting to endpoint")
@@ -215,23 +208,22 @@ class ZoomConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_get_user_settings(self, param):
-
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = param["user_id"]
 
-        ret_val, response = self._make_rest_call("/users/{}/settings".format(user_id), action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call(f"/users/{user_id}/settings", action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         action_result.add_data(response)
-        return action_result.set_status(phantom.APP_SUCCESS, "User settings for id {} successfully retrieved".format(user_id))
+        return action_result.set_status(phantom.APP_SUCCESS, f"User settings for id {user_id} successfully retrieved")
 
     def _handle_update_user_settings(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -267,7 +259,7 @@ class ZoomConnector(BaseConnector):
         if waiting_room != "None":
             data["in_meeting"] = {"waiting_room": waiting_room == "True"}
 
-        ret_val, _ = self._make_rest_call("/users/{}/settings".format(user_id), action_result, json=data, headers=None, method="patch")
+        ret_val, _ = self._make_rest_call(f"/users/{user_id}/settings", action_result, json=data, headers=None, method="patch")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -288,16 +280,16 @@ class ZoomConnector(BaseConnector):
             }
         )
 
-        return action_result.set_status(phantom.APP_SUCCESS, "User {} successfully updated".format(user_id))
+        return action_result.set_status(phantom.APP_SUCCESS, f"User {user_id} successfully updated")
 
     def _handle_delete_meeting(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         meeting_id = param["meeting_id"]
 
-        ret_val, _ = self._make_rest_call("/meetings/{}".format(meeting_id), action_result, headers=None, method="delete")
+        ret_val, _ = self._make_rest_call(f"/meetings/{meeting_id}", action_result, headers=None, method="delete")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -308,7 +300,7 @@ class ZoomConnector(BaseConnector):
             }
         )
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Meeting {} successfully deleted".format(meeting_id))
+        return action_result.set_status(phantom.APP_SUCCESS, f"Meeting {meeting_id} successfully deleted")
 
     def _get_password(self, password, pass_gen):
         if pass_gen:
@@ -319,7 +311,7 @@ class ZoomConnector(BaseConnector):
             return password
 
     def _handle_create_meeting(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -363,7 +355,7 @@ class ZoomConnector(BaseConnector):
             if attendees:
                 data["settings"]["meeting_invitees"] = [{"email": attendee} for attendee in attendees]
 
-        ret_val, res = self._make_rest_call("/users/{}/meetings".format(user_id), action_result, json=data, headers=None, method="post")
+        ret_val, res = self._make_rest_call(f"/users/{user_id}/meetings", action_result, json=data, headers=None, method="post")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -386,7 +378,7 @@ class ZoomConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS, "Meeting {} successfully created".format(res["id"]))
 
     def _handle_update_meeting(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
@@ -404,7 +396,7 @@ class ZoomConnector(BaseConnector):
         if waiting_room != "None":
             data["settings"] = {"waiting_room": (waiting_room == "True")}
 
-        ret_val, _ = self._make_rest_call("/meetings/{}".format(meeting_id), action_result, json=data, headers=None, method="patch")
+        ret_val, _ = self._make_rest_call(f"/meetings/{meeting_id}", action_result, json=data, headers=None, method="patch")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -413,16 +405,16 @@ class ZoomConnector(BaseConnector):
             {"meeting_updated": True, "password": password, "waiting_room": ("Not Updated" if waiting_room == "None" else waiting_room)}
         )
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Meeting {} successfully updated".format(meeting_id))
+        return action_result.set_status(phantom.APP_SUCCESS, f"Meeting {meeting_id} successfully updated")
 
     def _handle_get_meeting_invitation(self, param):
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         meeting_id = param["meeting_id"]
 
-        ret_val, response = self._make_rest_call("/meetings/{}/invitation".format(meeting_id), action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call(f"/meetings/{meeting_id}/invitation", action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -444,58 +436,55 @@ class ZoomConnector(BaseConnector):
 
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
-            self.debug_print("Error: {}".format(error_message))
+            self.debug_print(f"Error: {error_message}")
             self.save_progress("Could not parse invitation fields")
 
         response["parsed_fields"] = parsed_fields
 
         action_result.add_data(response)
-        return action_result.set_status(phantom.APP_SUCCESS, "Meeting invitation for id {} successfully retrieved".format(meeting_id))
+        return action_result.set_status(phantom.APP_SUCCESS, f"Meeting invitation for id {meeting_id} successfully retrieved")
 
     def _handle_get_user(self, param):
-
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = param["user_id"]
 
-        ret_val, response = self._make_rest_call("/users/{}".format(user_id), action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call(f"/users/{user_id}", action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         action_result.add_data(response)
-        return action_result.set_status(phantom.APP_SUCCESS, "User information for id {} successfully retrieved".format(user_id))
+        return action_result.set_status(phantom.APP_SUCCESS, f"User information for id {user_id} successfully retrieved")
 
     def _handle_get_meeting(self, param):
-
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         meeting_id = param["meeting_id"]
 
-        ret_val, response = self._make_rest_call("/meetings/{}".format(meeting_id), action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call(f"/meetings/{meeting_id}", action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         action_result.add_data(response)
-        return action_result.set_status(phantom.APP_SUCCESS, "Meeting information for id {} successfully retrieved".format(meeting_id))
+        return action_result.set_status(phantom.APP_SUCCESS, f"Meeting information for id {meeting_id} successfully retrieved")
 
     def _get_token(self, action_result):
         params = {"grant_type": "account_credentials", "account_id": self._account_id}
         ret_val, response = self._make_rest_call(
             GET_TOKEN_URL, action_result, method="post", new_token=True, auth=HTTPBasicAuth(self._client_id, self._client_secret), params=params
-        )  # noqa E501
+        )
         if phantom.is_fail(ret_val):
             return action_result.get_status()
         self._token = response.get("access_token")
         return phantom.APP_SUCCESS
 
     def handle_action(self, param):
-
         ret_val = phantom.APP_SUCCESS
 
         # Get the action that we are supposed to execute for this App Run
@@ -536,7 +525,6 @@ class ZoomConnector(BaseConnector):
             del self._state["token"]
 
     def initialize(self):
-
         # Load the state
         self._state = self.load_state()
         if not isinstance(self._state, dict):
@@ -557,7 +545,7 @@ class ZoomConnector(BaseConnector):
             except Exception as e:
                 self._token = None
                 error_message = self._get_error_message_from_exception(e)
-                self.debug_print("Error occurred while encryption, Error: {}".format(error_message))
+                self.debug_print(f"Error occurred while encryption, Error: {error_message}")
 
         if self.get_action_identifier() == TEST_CONNECTIVITY_IDENTIFIER or not self._token:
             self.debug_print("Try to generate new access token")
@@ -577,13 +565,12 @@ class ZoomConnector(BaseConnector):
                 self._state["token"] = encryption_helper.encrypt(self._token, self.get_asset_id())
             except Exception as e:
                 error_message = self._get_error_message_from_exception(e)
-                self.debug_print("Error occurred while encryption, Error: {}".format(error_message))
+                self.debug_print(f"Error occurred while encryption, Error: {error_message}")
         self.save_state(self._state)
         return phantom.APP_SUCCESS
 
 
 if __name__ == "__main__":
-
     import argparse
     import sys
 
@@ -604,7 +591,6 @@ if __name__ == "__main__":
     password = args.password
 
     if username is not None and password is None:
-
         # User specified a username but not a password, so ask
         import getpass
 

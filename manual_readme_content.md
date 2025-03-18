@@ -1,17 +1,3 @@
-[comment]: # " File: README.md"
-[comment]: # "  Copyright (c) 2021-2024 Splunk Inc."
-[comment]: # ""
-[comment]: # "Licensed under the Apache License, Version 2.0 (the 'License');"
-[comment]: # "you may not use this file except in compliance with the License."
-[comment]: # "You may obtain a copy of the License at"
-[comment]: # ""
-[comment]: # "    http://www.apache.org/licenses/LICENSE-2.0"
-[comment]: # ""
-[comment]: # "Unless required by applicable law or agreed to in writing, software distributed under"
-[comment]: # "the License is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,"
-[comment]: # "either express or implied. See the License for the specific language governing permissions"
-[comment]: # "and limitations under the License."
-[comment]: # ""
 ### SDK and SDK Licensing details for the app
 
 #### PyJWT
@@ -48,10 +34,10 @@ provided with an account id, client id and client secret, keep track of these. T
 necessary for the configuration on the SOAR side. To ensure that all actions are executed properly,
 you must include the following scopes in the Server-to-Server OAuth app.
 
--   user:read:admin
--   user:write:admin
--   meeting:read:admin
--   meeting:write:admin
+- user:read:admin
+- user:write:admin
+- meeting:read:admin
+- meeting:write:admin
 
 ### App Configuration (Splunk> SOAR Side)
 
