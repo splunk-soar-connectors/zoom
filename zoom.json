@@ -10,7 +10,7 @@
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2021-2024 Splunk Inc.",
+    "license": "Copyright (c) 2021-2025 Splunk Inc.",
     "app_version": "3.1.0",
     "utctime_updated": "2022-08-18T22:38:54.000000Z",
     "package_name": "phantom_zoom",
@@ -1276,7 +1276,7 @@
                     ],
                     "column_name": "Host ID",
                     "column_order": 0,
-                    "contains":[
+                    "contains": [
                         "zoom user id"
                     ]
                 },
@@ -1288,7 +1288,7 @@
                     ],
                     "column_name": "Meeting ID",
                     "column_order": 1,
-                    "contains":[
+                    "contains": [
                         "zoom meeting id"
                     ]
                 },
