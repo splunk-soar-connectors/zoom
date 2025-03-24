@@ -49,7 +49,7 @@ repos:
         exclude: "README.md"
   # Central hooks
   - repo: https://github.com/phantomcyber/dev-cicd-tools
-    rev: main
+    rev: mnordby/order-docker-command
     hooks:
       - id: build-docs
       - id: copyright
