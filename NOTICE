@@ -1,14 +1,14 @@
 Splunk SOAR Zoom
-Copyright (c) 2021 Splunk Inc.
+Copyright (c) 2021-2025 Splunk Inc.
 
-Third-party Software Attributions:
+Third Party Software Attributions:
 
-Library: PyJWT
-Version: 1.7.1
+Name: PyJWT
+Version: 2.4.0
+Author: Jose Padilla
 License: MIT
-Copyright 2015 José Padilla
 
-Library: random-password-generator
+Name: random-password-generator
 Version: 2.1.0
+Author: Surya Teja Reddy Valluri
 License: MIT
-Copyright 2018 Arijit Basu
