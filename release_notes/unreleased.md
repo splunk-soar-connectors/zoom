@@ -1,3 +1,2 @@
 **Unreleased**
-
-* chore(ci): update pre-commit config
+* Added mute_upon_entry option
