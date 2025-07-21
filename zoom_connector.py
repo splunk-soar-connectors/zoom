@@ -16,6 +16,7 @@
 #
 # Phantom App imports
 import json
+from http import HTTPStatus
 from urllib.parse import unquote
 
 import encryption_helper
@@ -172,7 +173,7 @@ class ZoomConnector(BaseConnector):
 
         try:
             r = request_func(url, timeout=DEFAULT_TIMEOUT, **kwargs)
-            if r.status_code != 204:
+            if r.status_code != HTTPStatus.NO_CONTENT:
                 resp_json = r.json()
                 if resp_json.get("code") == 124 and (resp_json.get("message", "") in INVALID_TOKEN_MSG_LIST):
                     self.debug_print("Access token is invalid/ expired, try to generate new access token")
