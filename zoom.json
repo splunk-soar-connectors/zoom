@@ -2743,7 +2743,19 @@
             },
             {
                 "module": "random_password_generator",
-                "input_file": "wheels/py3/random_password_generator-2.1.0-py3-none-any.whl"
+                "input_file": "wheels/py3/random_password_generator-2.2.0-py3-none-any.whl"
+            }
+        ]
+    },
+    "pip313_dependencies": {
+        "wheel": [
+            {
+                "module": "PyJWT",
+                "input_file": "wheels/py3/PyJWT-2.4.0-py3-none-any.whl"
+            },
+            {
+                "module": "random_password_generator",
+                "input_file": "wheels/py3/random_password_generator-2.2.0-py3-none-any.whl"
             }
         ]
     }
