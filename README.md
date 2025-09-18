@@ -1,9 +1,9 @@
 # Zoom
 
-Publisher: Splunk \
-Connector Version: 3.2.0 \
-Product Vendor: Zoom \
-Product Name: Zoom Meetings \
+Publisher: Splunk <br>
+Connector Version: 3.2.0 <br>
+Product Vendor: Zoom <br>
+Product Name: Zoom Meetings <br>
 Minimum Product Version: 6.2.1
 
 The app integrates with Zoom Meetings API to perform investigative and generic actions
@@ -81,21 +81,21 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration \
-[get meeting invitation](#action-get-meeting-invitation) - Get zoom meeting invitation \
-[get user settings](#action-get-user-settings) - Get zoom user settings \
-[get user](#action-get-user) - Get zoom user info \
-[create meeting](#action-create-meeting) - Create zoom meeting \
-[get meeting](#action-get-meeting) - Get zoom meeting details \
-[update meeting](#action-update-meeting) - Update zoom meeting \
-[delete meeting](#action-delete-meeting) - Delete zoom meeting \
+[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration <br>
+[get meeting invitation](#action-get-meeting-invitation) - Get zoom meeting invitation <br>
+[get user settings](#action-get-user-settings) - Get zoom user settings <br>
+[get user](#action-get-user) - Get zoom user info <br>
+[create meeting](#action-create-meeting) - Create zoom meeting <br>
+[get meeting](#action-get-meeting) - Get zoom meeting details <br>
+[update meeting](#action-update-meeting) - Update zoom meeting <br>
+[delete meeting](#action-delete-meeting) - Delete zoom meeting <br>
 [update user settings](#action-update-user-settings) - Update zoom user settings
 
 ## action: 'test connectivity'
 
 Validate the asset configuration for connectivity using supplied configuration
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -110,7 +110,7 @@ No Output
 
 Get zoom meeting invitation
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -140,7 +140,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get zoom user settings
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -304,7 +304,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get zoom user info
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -366,7 +366,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Create zoom meeting
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 In <b>user_id</b> parameter, user ID or user's email can be used. Also, we can pass the <b>me</b> value for current user. The parameter auto_recording would set the place to save the meeting recording: local - Record the meeting locally, cloud - Record the meeting to the cloud, none - Auto-recording disabled.
@@ -490,7 +490,7 @@ summary.total_objects_successful | numeric | | |
 
 Get zoom meeting details
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -596,7 +596,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Update zoom meeting
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -629,7 +629,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Delete zoom meeting
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Deletes previous and future zoom meetings.
@@ -656,7 +656,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Update zoom user settings
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
