@@ -15,7 +15,7 @@
     "utctime_updated": "2025-09-22T20:28:00.509666Z",
     "package_name": "phantom_zoom",
     "main_module": "zoom_connector.py",
-    "min_phantom_version": "6.2.1",
+    "min_phantom_version": "8.6.0",
     "fips_compliant": true,
     "app_wizard_version": "1.0.0",
     "latest_tested_versions": [
@@ -1137,7 +1137,7 @@
                 },
                 "password": {
                     "description": "Meeting password",
-                    "data_type": "string",
+                    "data_type": "password",
                     "order": 1
                 },
                 "gen_password": {
@@ -1206,7 +1206,7 @@
                 },
                 {
                     "data_path": "action_result.parameter.password",
-                    "data_type": "string"
+                    "data_type": "password"
                 },
                 {
                     "data_path": "action_result.parameter.gen_password",
@@ -2323,7 +2323,7 @@
                 },
                 "password": {
                     "description": "Meeting password",
-                    "data_type": "string",
+                    "data_type": "password",
                     "order": 1
                 },
                 "gen_password": {
@@ -2378,7 +2378,7 @@
                 },
                 {
                     "data_path": "action_result.parameter.password",
-                    "data_type": "string",
+                    "data_type": "password",
                     "example_values": [
                         "testPass1"
                     ]
@@ -2549,7 +2549,7 @@
                 },
                 "pmi_password": {
                     "description": "User pmi password",
-                    "data_type": "string",
+                    "data_type": "password",
                     "order": 2
                 },
                 "gen_pmi_password": {
@@ -2616,7 +2616,7 @@
                 },
                 {
                     "data_path": "action_result.parameter.pmi_password",
-                    "data_type": "string",
+                    "data_type": "password",
                     "example_values": [
                         "test@123"
                     ]
