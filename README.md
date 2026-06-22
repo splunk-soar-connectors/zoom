@@ -4,7 +4,7 @@ Publisher: Splunk <br>
 Connector Version: 3.2.1 <br>
 Product Vendor: Zoom <br>
 Product Name: Zoom Meetings <br>
-Minimum Product Version: 6.2.1
+Minimum Product Version: 8.6.0
 
 The app integrates with Zoom Meetings API to perform investigative and generic actions
 
