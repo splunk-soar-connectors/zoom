@@ -4,7 +4,7 @@ Publisher: Splunk <br>
 Connector Version: 3.2.1 <br>
 Product Vendor: Zoom <br>
 Product Name: Zoom Meetings <br>
-Minimum Product Version: 6.2.1
+Minimum Product Version: 8.6.0
 
 The app integrates with Zoom Meetings API to perform investigative and generic actions
 
@@ -376,7 +376,7 @@ In <b>user_id</b> parameter, user ID or user's email can be used. Also, we can p
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **user_id** | required | User id | string | `zoom user id` `email` |
-**password** | optional | Meeting password | string | |
+**password** | optional | Meeting password | password | |
 **gen_password** | optional | Auto generate meeting password | boolean | |
 **waiting_room** | required | Enable waiting room | string | |
 **topic** | optional | Topic of meeting | string | |
@@ -391,7 +391,7 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.parameter.user_id | string | `zoom user id` `email` | |
-action_result.parameter.password | string | | |
+action_result.parameter.password | password | | |
 action_result.parameter.gen_password | boolean | | |
 action_result.parameter.waiting_room | string | | |
 action_result.parameter.topic | string | | |
@@ -604,7 +604,7 @@ Read only: **False**
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **meeting_id** | required | Zoom meeting ID | string | `zoom meeting id` |
-**password** | optional | Meeting password | string | |
+**password** | optional | Meeting password | password | |
 **gen_password** | optional | Auto generate meeting password | boolean | |
 **waiting_room** | required | Enable waiting room | string | |
 
@@ -615,7 +615,7 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 action_result.status | string | | success failed |
 action_result.parameter.gen_password | boolean | | None True False |
 action_result.parameter.meeting_id | string | `zoom meeting id` | 92512345678 |
-action_result.parameter.password | string | | testPass1 |
+action_result.parameter.password | password | | testPass1 |
 action_result.parameter.waiting_room | string | | None |
 action_result.data | string | | |
 action_result.summary.meeting_updated | boolean | | True False |
@@ -665,7 +665,7 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **user_id** | required | Zoom user ID | string | `zoom user id` |
 **req_password_pmi** | required | Require password for PMI | string | |
-**pmi_password** | optional | User pmi password | string | |
+**pmi_password** | optional | User pmi password | password | |
 **gen_pmi_password** | optional | Auto generate pmi password | boolean | |
 **waiting_room** | required | Enable waiting room | string | |
 **req_password_sched** | required | Require password for scheduling meetings | string | |
@@ -677,7 +677,7 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.status | string | | success failed |
 action_result.parameter.gen_pmi_password | boolean | | None True False |
-action_result.parameter.pmi_password | string | | test@123 |
+action_result.parameter.pmi_password | password | | test@123 |
 action_result.parameter.req_password_inst | string | | None |
 action_result.parameter.req_password_pmi | string | | None |
 action_result.parameter.req_password_sched | string | | None |
@@ -698,7 +698,7 @@ ______________________________________________________________________
 
 Auto-generated Splunk SOAR Connector documentation.
 
-Copyright 2025 Splunk Inc.
+Copyright 2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
