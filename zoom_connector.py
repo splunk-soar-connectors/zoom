@@ -17,7 +17,7 @@
 # Phantom App imports
 import json
 from http import HTTPStatus
-from urllib.parse import quote, unquote
+from urllib.parse import parse_qsl, quote, unquote, urlencode, urlsplit, urlunsplit
 
 import encryption_helper
 import phantom.app as phantom
@@ -58,6 +58,30 @@ class ZoomConnector(BaseConnector):
     @staticmethod
     def _is_setting_selected(value):
         return value is not None and value != "None"
+
+    @staticmethod
+    def _without_secret_parameters(param, *secret_names):
+        safe_param = dict(param)
+        for secret_name in secret_names:
+            safe_param.pop(secret_name, None)
+        return safe_param
+
+    @staticmethod
+    def _without_meeting_credentials(response):
+        safe_response = dict(response)
+        for field_name in ("password", "h323_password", "pstn_password", "encrypted_password"):
+            safe_response.pop(field_name, None)
+
+        for field_name in ("join_url", "start_url"):
+            value = safe_response.get(field_name)
+            if not value:
+                continue
+
+            parsed = urlsplit(value)
+            query = urlencode([(key, query_value) for key, query_value in parse_qsl(parsed.query) if key.lower() != "pwd"])
+            safe_response[field_name] = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, query, parsed.fragment))
+
+        return safe_response
 
     def _get_error_message_from_exception(self, e):
         """
@@ -243,7 +267,7 @@ class ZoomConnector(BaseConnector):
     def _handle_update_user_settings(self, param):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._without_secret_parameters(param, "pmi_password")))
 
         user_id = param["user_id"]
         try:
@@ -295,7 +319,6 @@ class ZoomConnector(BaseConnector):
 
         action_result.update_summary(
             {
-                "pmi_password": ("Not Updated" if not (pmi_password) else pmi_password),
                 "waiting_room": ("Not Updated" if not is_waiting_room_updated else waiting_room),
                 "require_password_for_instant_meetings": ("Not Updated" if not is_req_password_inst_updated else req_password_inst),
                 "require_password_for_scheduling_new_meetings": ("Not Updated" if not is_req_password_sched_updated else req_password_sched),
@@ -340,7 +363,7 @@ class ZoomConnector(BaseConnector):
     def _handle_create_meeting(self, param):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._without_secret_parameters(param, "password")))
 
         user_id = param["user_id"]
         try:
@@ -395,13 +418,12 @@ class ZoomConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
-        action_result.add_data(res)
+        action_result.add_data(self._without_meeting_credentials(res))
 
         action_result.update_summary(
             {
                 "meeting_id": str(res["id"]),
                 "meeting_created": True,
-                "password": password if password else "Not Added",
                 "waiting_room": ("Not Added" if waiting_room == "None" else waiting_room),
                 "alternative_hosts": ("Not Added" if not alternative_hosts else alternative_hosts),
                 "continuous_meeting_chat": ("Not Added" if not continuous_meeting_chat else str(continuous_meeting_chat)),
@@ -416,7 +438,7 @@ class ZoomConnector(BaseConnector):
     def _handle_update_meeting(self, param):
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        action_result = self.add_action_result(ActionResult(self._without_secret_parameters(param, "password")))
 
         meeting_id = param["meeting_id"]
         try:
@@ -441,9 +463,7 @@ class ZoomConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
-        action_result.update_summary(
-            {"meeting_updated": True, "password": password, "waiting_room": ("Not Updated" if waiting_room == "None" else waiting_room)}
-        )
+        action_result.update_summary({"meeting_updated": True, "waiting_room": ("Not Updated" if waiting_room == "None" else waiting_room)})
 
         return action_result.set_status(phantom.APP_SUCCESS, f"Meeting {meeting_id} successfully updated")
 
@@ -523,7 +543,7 @@ class ZoomConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
-        action_result.add_data(response)
+        action_result.add_data(self._without_meeting_credentials(response))
         return action_result.set_status(phantom.APP_SUCCESS, f"Meeting information for id {meeting_id} successfully retrieved")
 
     def _get_token(self, action_result):
