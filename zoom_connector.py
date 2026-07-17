@@ -55,6 +55,10 @@ class ZoomConnector(BaseConnector):
 
         return quote(value, safe="")
 
+    @staticmethod
+    def _is_setting_selected(value):
+        return value is not None and value != "None"
+
     def _get_error_message_from_exception(self, e):
         """
         Get appropriate error message from the exception.
@@ -253,28 +257,35 @@ class ZoomConnector(BaseConnector):
         req_password_inst = param.get("req_password_inst")
         req_password_pmi = param.get("req_password_pmi")
 
-        is_waiting_room_updated = waiting_room != "None"
-        is_req_password_sched_updated = req_password_sched != "None"  # pragma: allowlist secret
-        is_req_password_inst = req_password_inst != "None"  # pragma: allowlist secret
-        if not (pmi_password or is_waiting_room_updated or is_req_password_sched_updated or is_req_password_inst):
+        is_waiting_room_updated = self._is_setting_selected(waiting_room)
+        is_req_password_sched_updated = self._is_setting_selected(req_password_sched)
+        is_req_password_inst_updated = self._is_setting_selected(req_password_inst)
+        is_req_password_pmi_updated = self._is_setting_selected(req_password_pmi)
+        if not (
+            pmi_password
+            or is_waiting_room_updated
+            or is_req_password_sched_updated
+            or is_req_password_inst_updated
+            or is_req_password_pmi_updated
+        ):
             return action_result.set_status(phantom.APP_ERROR, "No settings were selected for update")
 
         data = {}
 
-        if pmi_password or req_password_sched != "None" or req_password_inst != "None" or req_password_pmi != "None":  # pragma: allowlist secret
+        if pmi_password or is_req_password_sched_updated or is_req_password_inst_updated or is_req_password_pmi_updated:
             data["schedule_meeting"] = {}
             if pmi_password:
                 data["schedule_meeting"]["pmi_password"] = pmi_password
-            if req_password_sched:
+            if is_req_password_sched_updated:
                 is_req_pass_true = req_password_sched == "True"  # pragma: allowlist secret
                 data["schedule_meeting"]["require_password_for_scheduling_new_meetings"] = is_req_pass_true
-            if req_password_inst:
+            if is_req_password_inst_updated:
                 is_req_pass_inst_true = req_password_inst == "True"  # pragma: allowlist secret
                 data["schedule_meeting"]["require_password_for_instant_meetings"] = is_req_pass_inst_true
-            if req_password_pmi:
+            if is_req_password_pmi_updated:
                 req_pass_pmi = "all" if req_password_pmi == "True" else "none"  # pragma: allowlist secret
                 data["schedule_meeting"]["require_password_for_pmi_meetings"] = req_pass_pmi
-        if waiting_room != "None":
+        if is_waiting_room_updated:
             data["in_meeting"] = {"waiting_room": waiting_room == "True"}
 
         ret_val, _ = self._make_rest_call(f"/users/{user_id_path}/settings", action_result, json=data, headers=None, method="patch")
@@ -285,16 +296,10 @@ class ZoomConnector(BaseConnector):
         action_result.update_summary(
             {
                 "pmi_password": ("Not Updated" if not (pmi_password) else pmi_password),
-                "waiting_room": ("Not Updated" if waiting_room == "None" else waiting_room),
-                "require_password_for_instant_meetings": (
-                    "Not Updated" if req_password_inst == "None" else req_password_inst  # pragma: allowlist secret
-                ),
-                "require_password_for_scheduling_new_meetings": (
-                    "Not Updated" if req_password_sched == "None" else req_password_sched  # pragma: allowlist secret
-                ),
-                "require_password_for_personal_meeting_instance": (
-                    "Not Updated" if req_password_pmi == "None" else req_password_pmi  # pragma: allowlist secret
-                ),
+                "waiting_room": ("Not Updated" if not is_waiting_room_updated else waiting_room),
+                "require_password_for_instant_meetings": ("Not Updated" if not is_req_password_inst_updated else req_password_inst),
+                "require_password_for_scheduling_new_meetings": ("Not Updated" if not is_req_password_sched_updated else req_password_sched),
+                "require_password_for_personal_meeting_instance": ("Not Updated" if not is_req_password_pmi_updated else req_password_pmi),
             }
         )
 
