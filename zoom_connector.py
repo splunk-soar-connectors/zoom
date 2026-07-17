@@ -17,7 +17,7 @@
 # Phantom App imports
 import json
 from http import HTTPStatus
-from urllib.parse import unquote
+from urllib.parse import quote, unquote
 
 import encryption_helper
 import phantom.app as phantom
@@ -45,6 +45,15 @@ class ZoomConnector(BaseConnector):
         self._token = None
         self._base_url = None
         self._client_id = self._client_secret = self._account_id = None
+
+    @staticmethod
+    def _encode_path_segment(value, parameter_name):
+        value = str(value)
+
+        if not value or ".." in value or any(character in value for character in ("/", "\\", "?", "#")):
+            raise ValueError(f"{parameter_name} contains invalid path characters")
+
+        return quote(value, safe="")
 
     def _get_error_message_from_exception(self, e):
         """
@@ -214,8 +223,12 @@ class ZoomConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = param["user_id"]
+        try:
+            user_id_path = self._encode_path_segment(user_id, "user_id")
+        except ValueError as e:
+            return action_result.set_status(phantom.APP_ERROR, str(e))
 
-        ret_val, response = self._make_rest_call(f"/users/{user_id}/settings", action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call(f"/users/{user_id_path}/settings", action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -229,6 +242,10 @@ class ZoomConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = param["user_id"]
+        try:
+            user_id_path = self._encode_path_segment(user_id, "user_id")
+        except ValueError as e:
+            return action_result.set_status(phantom.APP_ERROR, str(e))
 
         pmi_password = self._get_password(param.get("pmi_password"), param.get("gen_pmi_password"))
         waiting_room = param.get("waiting_room")
@@ -260,7 +277,7 @@ class ZoomConnector(BaseConnector):
         if waiting_room != "None":
             data["in_meeting"] = {"waiting_room": waiting_room == "True"}
 
-        ret_val, _ = self._make_rest_call(f"/users/{user_id}/settings", action_result, json=data, headers=None, method="patch")
+        ret_val, _ = self._make_rest_call(f"/users/{user_id_path}/settings", action_result, json=data, headers=None, method="patch")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -289,8 +306,12 @@ class ZoomConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         meeting_id = param["meeting_id"]
+        try:
+            meeting_id_path = self._encode_path_segment(meeting_id, "meeting_id")
+        except ValueError as e:
+            return action_result.set_status(phantom.APP_ERROR, str(e))
 
-        ret_val, _ = self._make_rest_call(f"/meetings/{meeting_id}", action_result, headers=None, method="delete")
+        ret_val, _ = self._make_rest_call(f"/meetings/{meeting_id_path}", action_result, headers=None, method="delete")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -317,6 +338,10 @@ class ZoomConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = param["user_id"]
+        try:
+            user_id_path = self._encode_path_segment(user_id, "user_id")
+        except ValueError as e:
+            return action_result.set_status(phantom.APP_ERROR, str(e))
         password = self._get_password(param.get("password"), param.get("gen_password"))
         waiting_room = param.get("waiting_room")
         topic = param.get("topic")
@@ -360,7 +385,7 @@ class ZoomConnector(BaseConnector):
             if attendees:
                 data["settings"]["meeting_invitees"] = [{"email": attendee} for attendee in attendees]
 
-        ret_val, res = self._make_rest_call(f"/users/{user_id}/meetings", action_result, json=data, headers=None, method="post")
+        ret_val, res = self._make_rest_call(f"/users/{user_id_path}/meetings", action_result, json=data, headers=None, method="post")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -389,6 +414,10 @@ class ZoomConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         meeting_id = param["meeting_id"]
+        try:
+            meeting_id_path = self._encode_path_segment(meeting_id, "meeting_id")
+        except ValueError as e:
+            return action_result.set_status(phantom.APP_ERROR, str(e))
         password = self._get_password(param.get("password"), param.get("gen_password"))
         waiting_room = param.get("waiting_room")
 
@@ -402,7 +431,7 @@ class ZoomConnector(BaseConnector):
         if waiting_room != "None":
             data["settings"] = {"waiting_room": (waiting_room == "True")}
 
-        ret_val, _ = self._make_rest_call(f"/meetings/{meeting_id}", action_result, json=data, headers=None, method="patch")
+        ret_val, _ = self._make_rest_call(f"/meetings/{meeting_id_path}", action_result, json=data, headers=None, method="patch")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -419,8 +448,12 @@ class ZoomConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         meeting_id = param["meeting_id"]
+        try:
+            meeting_id_path = self._encode_path_segment(meeting_id, "meeting_id")
+        except ValueError as e:
+            return action_result.set_status(phantom.APP_ERROR, str(e))
 
-        ret_val, response = self._make_rest_call(f"/meetings/{meeting_id}/invitation", action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call(f"/meetings/{meeting_id_path}/invitation", action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -456,8 +489,12 @@ class ZoomConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = param["user_id"]
+        try:
+            user_id_path = self._encode_path_segment(user_id, "user_id")
+        except ValueError as e:
+            return action_result.set_status(phantom.APP_ERROR, str(e))
 
-        ret_val, response = self._make_rest_call(f"/users/{user_id}", action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call(f"/users/{user_id_path}", action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -471,8 +508,12 @@ class ZoomConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         meeting_id = param["meeting_id"]
+        try:
+            meeting_id_path = self._encode_path_segment(meeting_id, "meeting_id")
+        except ValueError as e:
+            return action_result.set_status(phantom.APP_ERROR, str(e))
 
-        ret_val, response = self._make_rest_call(f"/meetings/{meeting_id}", action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call(f"/meetings/{meeting_id_path}", action_result, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()

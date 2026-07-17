@@ -1,3 +1,3 @@
 **Unreleased**
 
-* Chore: refresh development checks (temporary baseline note).
+* Validated meeting and user identifiers before using them in Zoom API paths. (PAPP-38043)
