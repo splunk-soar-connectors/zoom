@@ -391,7 +391,6 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.parameter.user_id | string | `zoom user id` `email` | |
-action_result.parameter.password | password | | |
 action_result.parameter.gen_password | boolean | | |
 action_result.parameter.waiting_room | string | | |
 action_result.parameter.topic | string | | |
@@ -403,16 +402,12 @@ action_result.parameter.meeting_invitees | string | | |
 action_result.data.\*.host_id | string | `zoom user id` | 22test-TeSTiNgZg8NTeST |
 action_result.summary.meeting_id | string | `zoom meeting id` | 97648930957 |
 action_result.data.\*.join_url | string | | https://zoom.us/T/99999999999 |
-action_result.data.\*.password | string | | I2q8w&DSw |
 action_result.data.\*.id | numeric | | 99999999999 |
 action_result.data.\*.type | numeric | | 2 |
 action_result.data.\*.uuid | string | | ztest22test/testWwC6VA== |
 action_result.data.\*.topic | string | | Zoom Meeting |
 action_result.data.\*.status | string | | waiting |
 action_result.data.\*.agenda | string | | This is test agenda for create meeting action. This is test agenda for create meeting action. This is test agenda for create meeting action. |
-action_result.data.\*.h323_password | string | | 800645960 |
-action_result.data.\*.pstn_password | string | | 800645960 |
-action_result.data.\*.encrypted_password | string | | uGBNumrMF6BPFw85hBNTApbDBeO7aI.1 |
 action_result.data.\*.duration | numeric | | 60 |
 action_result.data.\*.settings.audio | string | | both |
 action_result.data.\*.settings.use_pmi | boolean | | True False |
@@ -471,7 +466,6 @@ action_result.data.\*.created_at | string | | 2024-09-10T11:48:20Z |
 action_result.data.\*.host_email | string | | test@test.in |
 action_result.data.\*.start_time | string | | 2024-09-10T11:48:20Z |
 action_result.data.\*.pre_schedule | boolean | | True False |
-action_result.summary.password | string | | Not Added |
 action_result.summary.waiting_room | string | | Not Added |
 action_result.summary.auto_recording | string | | cloud |
 action_result.summary.meeting_created | boolean | | True False |
@@ -485,6 +479,7 @@ action_result.summary | string | | |
 action_result.message | string | | |
 summary.total_objects | numeric | | |
 summary.total_objects_successful | numeric | | |
+action_result.parameter.password | password | | |
 
 ## action: 'get meeting'
 
@@ -509,8 +504,6 @@ action_result.data.\*.agenda | string | | |
 action_result.data.\*.assistant_id | string | | |
 action_result.data.\*.created_at | string | | |
 action_result.data.\*.duration | numeric | | |
-action_result.data.\*.encrypted_password | string | | |
-action_result.data.\*.h323_password | string | | |
 action_result.data.\*.host_email | string | | |
 action_result.data.\*.host_id | string | | |
 action_result.data.\*.id | numeric | | |
@@ -519,10 +512,8 @@ action_result.data.\*.occurrences.\*.duration | numeric | | |
 action_result.data.\*.occurrences.\*.occurrence_id | string | | |
 action_result.data.\*.occurrences.\*.start_time | string | | |
 action_result.data.\*.occurrences.\*.status | string | | |
-action_result.data.\*.password | string | | |
 action_result.data.\*.pmi | numeric | | |
 action_result.data.\*.pre_schedule | boolean | | |
-action_result.data.\*.pstn_password | string | | |
 action_result.data.\*.recurrence.end_date_time | string | | |
 action_result.data.\*.recurrence.end_times | numeric | | |
 action_result.data.\*.recurrence.monthly_day | numeric | | |
@@ -615,15 +606,14 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 action_result.status | string | | success failed |
 action_result.parameter.gen_password | boolean | | None True False |
 action_result.parameter.meeting_id | string | `zoom meeting id` | 92512345678 |
-action_result.parameter.password | password | | testPass1 |
 action_result.parameter.waiting_room | string | | None |
 action_result.data | string | | |
 action_result.summary.meeting_updated | boolean | | True False |
-action_result.summary.password | string | | testxFghbsuHndTYGF |
 action_result.summary.waiting_room | string | | Not Updated |
 action_result.message | string | | |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
+action_result.parameter.password | password | | |
 
 ## action: 'delete meeting'
 
@@ -677,7 +667,6 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.status | string | | success failed |
 action_result.parameter.gen_pmi_password | boolean | | None True False |
-action_result.parameter.pmi_password | password | | test@123 |
 action_result.parameter.req_password_inst | string | | None |
 action_result.parameter.req_password_pmi | string | | None |
 action_result.parameter.req_password_sched | string | | None |
@@ -685,7 +674,6 @@ action_result.parameter.user_id | string | `zoom user id` | A0BiCtoDEFGHIzYaZcLd
 action_result.parameter.user_id | string | `zoom user id` | A0BiCtoDEFGHIzYaZcLdsA |
 action_result.parameter.waiting_room | string | | None |
 action_result.data | string | | |
-action_result.summary.pmi_password | string | | Not Updated |
 action_result.summary.require_password_for_instant_meetings | string | | Not Updated |
 action_result.summary.require_password_for_personal_meeting_instance | string | | Not Updated |
 action_result.summary.require_password_for_scheduling_new_meetings | string | | Not Updated |
@@ -693,6 +681,7 @@ action_result.summary.waiting_room | string | | Not Updated |
 action_result.message | string | | |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
+action_result.parameter.pmi_password | password | | |
 
 ______________________________________________________________________
 
