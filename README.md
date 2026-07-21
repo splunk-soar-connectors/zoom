@@ -1,7 +1,7 @@
 # Zoom
 
 Publisher: Splunk <br>
-Connector Version: 3.2.2 <br>
+Connector Version: 4.0.0 <br>
 Product Vendor: Zoom <br>
 Product Name: Zoom Meetings <br>
 Minimum Product Version: 8.6.0

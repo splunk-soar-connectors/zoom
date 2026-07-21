@@ -1,6 +1,1 @@
 **Unreleased**
-
-* Validated meeting and user identifiers before using them in Zoom API paths. (PAPP-38043)
-* Preserved password-policy settings when optional update values are omitted. (PAPP-38043)
-* Prevented meeting and PMI credentials from being persisted in action results. (PAPP-38043)
-* Excluded OAuth token responses from action debug data. (PAPP-38043)
