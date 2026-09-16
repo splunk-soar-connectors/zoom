@@ -1,3 +1,3 @@
 **Unreleased**
 
-* - Updated the bundled PyJWT dependency to 2.13.0.
+* Updated the bundled PyJWT dependency to 2.13.0.
