@@ -479,7 +479,6 @@ action_result.summary | string | | |
 action_result.message | string | | |
 summary.total_objects | numeric | | |
 summary.total_objects_successful | numeric | | |
-action_result.parameter.password | password | | |
 
 ## action: 'get meeting'
 
@@ -613,7 +612,6 @@ action_result.summary.waiting_room | string | | Not Updated |
 action_result.message | string | | |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
-action_result.parameter.password | password | | |
 
 ## action: 'delete meeting'
 
@@ -681,7 +679,6 @@ action_result.summary.waiting_room | string | | Not Updated |
 action_result.message | string | | |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
-action_result.parameter.pmi_password | password | | |
 
 ______________________________________________________________________
 
