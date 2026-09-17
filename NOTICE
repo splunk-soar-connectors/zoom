@@ -4,9 +4,9 @@ Third Party Software Attributions:
 
 @@@@============================================================================
 
-Library: PyJWT - 2.4.0
+Library: PyJWT - 2.13.0
 Homepage: https://github.com/jpadilla/pyjwt
-License: MIT License
+License: MIT
 License Text:
 
 The MIT License (MIT)
@@ -60,4 +60,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-

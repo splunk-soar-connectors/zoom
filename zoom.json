@@ -1842,10 +1842,6 @@
                 {
                     "data_path": "summary.total_objects_successful",
                     "data_type": "numeric"
-                },
-                {
-                    "data_path": "action_result.parameter.password",
-                    "data_type": "password"
                 }
             ],
             "render": {
@@ -2366,10 +2362,6 @@
                     "example_values": [
                         1
                     ]
-                },
-                {
-                    "data_path": "action_result.parameter.password",
-                    "data_type": "password"
                 }
             ],
             "render": {
@@ -2650,10 +2642,6 @@
                     "example_values": [
                         1
                     ]
-                },
-                {
-                    "data_path": "action_result.parameter.pmi_password",
-                    "data_type": "password"
                 }
             ],
             "render": {
@@ -2665,20 +2653,24 @@
     "pip39_dependencies": {
         "wheel": [
             {
-                "module": "PyJWT",
-                "input_file": "wheels/py3/PyJWT-2.4.0-py3-none-any.whl"
+                "module": "pyjwt",
+                "input_file": "wheels/py3/pyjwt-2.13.0-py3-none-any.whl"
             },
             {
                 "module": "random_password_generator",
                 "input_file": "wheels/py3/random_password_generator-2.2.0-py3-none-any.whl"
+            },
+            {
+                "module": "typing_extensions",
+                "input_file": "wheels/py3/typing_extensions-4.16.0-py3-none-any.whl"
             }
         ]
     },
     "pip313_dependencies": {
         "wheel": [
             {
-                "module": "PyJWT",
-                "input_file": "wheels/py3/PyJWT-2.4.0-py3-none-any.whl"
+                "module": "pyjwt",
+                "input_file": "wheels/py3/pyjwt-2.13.0-py3-none-any.whl"
             },
             {
                 "module": "random_password_generator",

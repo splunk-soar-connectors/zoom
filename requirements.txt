@@ -1,2 +1,2 @@
-pyjwt==2.4.0
+pyjwt==2.13.0
 random-password-generator==2.2.0
