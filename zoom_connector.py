@@ -50,7 +50,7 @@ class ZoomConnector(BaseConnector):
     def _encode_path_segment(value, parameter_name):
         value = str(value)
 
-        if not value or ".." in value or any(character in value for character in ("/", "\\", "?", "#")):
+        if not value or value == "." or ".." in value or any(character in value for character in ("/", "\\", "?", "#")):
             raise ValueError(f"{parameter_name} contains invalid path characters")
 
         return quote(value, safe="")
