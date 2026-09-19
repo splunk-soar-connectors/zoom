@@ -1,3 +1,1 @@
 **Unreleased**
-
-* Reject dot-only Zoom identifiers before building API request paths.
