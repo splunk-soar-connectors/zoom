@@ -1,10 +1,5 @@
 ### SDK and SDK Licensing details for the app
 
-#### PyJWT
-
-This app uses the PyJWT module, which is licensed under the MIT License (MIT), Copyright (c) Jose
-Padilla.
-
 #### random-password-generator
 
 This app uses the random-password-generator module, which is licensed under the MIT License (MIT),
