@@ -14,12 +14,14 @@
 
 """Import all actions to register them with the app."""
 
-from . import create_meeting  # noqa: F401
-from . import delete_meeting  # noqa: F401
-from . import get_meeting  # noqa: F401
-from . import get_meeting_invitation  # noqa: F401
-from . import get_user  # noqa: F401
-from . import get_user_settings  # noqa: F401
-from . import test_connectivity  # noqa: F401
-from . import update_meeting  # noqa: F401
-from . import update_user_settings  # noqa: F401
+from . import (
+    create_meeting,
+    delete_meeting,
+    get_meeting,
+    get_meeting_invitation,
+    get_user,
+    get_user_settings,
+    test_connectivity,
+    update_meeting,
+    update_user_settings,
+)

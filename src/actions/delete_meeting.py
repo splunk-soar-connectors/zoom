@@ -15,18 +15,20 @@
 """Delete Meeting action."""
 
 from soar_sdk.abstract import SOARClient
-from soar_sdk.action_results import ActionOutput
-from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
 from soar_sdk.params import Param, Params
+
 from ..app import Asset, app
 from ..helper import ZoomHelper
 from ..output_models import DeleteMeetingOutput, DeleteMeetingSummary
 
+
 logger = getLogger()
 
+
 class DeleteMeetingParams(Params):
-    meeting_id: str = Param(description='Zoom meeting ID', required=True, primary=True, cef_types=['zoom meeting id'], column_name="Meeting ID")
+    meeting_id: str = Param(description="Zoom meeting ID", required=True, primary=True, cef_types=["zoom meeting id"], column_name="Meeting ID")
+
 
 @app.action(
     description="Delete zoom meeting",
@@ -36,9 +38,7 @@ class DeleteMeetingParams(Params):
     verbose="Deletes previous and future zoom meetings.",
     summary_type=DeleteMeetingSummary,
 )
-def delete_meeting(
-    params: DeleteMeetingParams, soar: SOARClient[DeleteMeetingSummary], asset: Asset
-) -> DeleteMeetingOutput:
+def delete_meeting(params: DeleteMeetingParams, soar: SOARClient[DeleteMeetingSummary], asset: Asset) -> DeleteMeetingOutput:
     logger.progress("Deleting Zoom meeting")
     meeting_id_path = ZoomHelper.encode_path_segment(params.meeting_id, "meeting_id")
     ZoomHelper(asset).make_rest_call(f"/meetings/{meeting_id_path}", method="delete")

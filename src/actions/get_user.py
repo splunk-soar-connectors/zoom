@@ -15,18 +15,20 @@
 """Get User action."""
 
 from soar_sdk.abstract import SOARClient
-from soar_sdk.action_results import ActionOutput
-from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
 from soar_sdk.params import Param, Params
+
 from ..app import Asset, app
 from ..helper import ZoomHelper
 from ..output_models import GetUserOutput
 
+
 logger = getLogger()
 
+
 class GetUserParams(Params):
-    user_id: str = Param(description='Zoom user ID', required=True, primary=True, cef_types=['zoom user id'], column_name="User ID")
+    user_id: str = Param(description="Zoom user ID", required=True, primary=True, cef_types=["zoom user id"], column_name="User ID")
+
 
 @app.action(description="Get zoom user info", action_type="investigate", read_only=True, render_as="table")
 def get_user(params: GetUserParams, soar: SOARClient, asset: Asset) -> GetUserOutput:

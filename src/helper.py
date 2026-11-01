@@ -14,8 +14,8 @@
 
 """HTTP and response helpers for the Zoom API."""
 
-from html.parser import HTMLParser
 import time
+from html.parser import HTMLParser
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 from soar_sdk.exceptions import ActionFailure
@@ -27,6 +27,7 @@ from .consts import (
     INVALID_TOKEN_CODES,
     INVALID_TOKEN_MESSAGES,
 )
+
 
 logger = getLogger()
 
@@ -86,22 +87,21 @@ class ZoomHelper:
             if not value:
                 continue
             parsed = urlsplit(value)
-            query = urlencode(
-                [(key, query_value) for key, query_value in parse_qsl(parsed.query) if key.lower() != "pwd"]
-            )
+            query = urlencode([(key, query_value) for key, query_value in parse_qsl(parsed.query) if key.lower() != "pwd"])
             safe_response[field_name] = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, query, parsed.fragment))
         return safe_response
 
     @staticmethod
     def _error_message(response) -> str:
-        import httpx
 
         try:
             payload = response.json()
         except ValueError:
             payload = None
         if isinstance(payload, dict):
-            return f"Error from server. Status Code: {response.status_code} Data from server: {response.text.replace('{', '{{').replace('}', '}}')}"
+            return (
+                f"Error from server. Status Code: {response.status_code} Data from server: {response.text.replace('{', '{{').replace('}', '}}')}"
+            )
         content_type = response.headers.get("Content-Type", "").lower()
         if "html" in content_type:
             parser = _TextExtractor()

@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from src.helper import ZoomHelper
 from soar_sdk.exceptions import ActionFailure
+
+from src.helper import ZoomHelper
 
 
 def test_encode_path_segment_encodes_reserved_characters():
@@ -31,9 +32,9 @@ def test_encode_path_segment_rejects_path_injection():
 
 def test_without_meeting_credentials_removes_passwords_and_pwd_query():
     response = {
-        "password": "secret",
-        "h323_password": "secret",
-        "join_url": "https://zoom.us/j/123?pwd=secret&source=soar",
+        "password": "unit-test-value",  # pragma: allowlist secret
+        "h323_password": "unit-test-value",  # pragma: allowlist secret
+        "join_url": "https://zoom.us/j/123?pwd=unit-test-value&source=soar",
         "topic": "Review",
     }
 
@@ -42,4 +43,4 @@ def test_without_meeting_credentials_removes_passwords_and_pwd_query():
     assert "password" not in safe
     assert "h323_password" not in safe
     assert safe["join_url"] == "https://zoom.us/j/123?source=soar"
-    assert response["password"] == "secret"
+    assert response["password"] == "unit-test-value"  # pragma: allowlist secret

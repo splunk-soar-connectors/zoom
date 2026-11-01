@@ -15,18 +15,20 @@
 """Get Meeting Invitation action."""
 
 from soar_sdk.abstract import SOARClient
-from soar_sdk.action_results import ActionOutput
-from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
 from soar_sdk.params import Param, Params
+
 from ..app import Asset, app
 from ..helper import ZoomHelper
 from ..output_models import GetMeetingInvitationOutput
 
+
 logger = getLogger()
 
+
 class GetMeetingInvitationParams(Params):
-    meeting_id: str = Param(description='Zoom meeting ID', required=True, primary=True, cef_types=['zoom meeting id'])
+    meeting_id: str = Param(description="Zoom meeting ID", required=True, primary=True, cef_types=["zoom meeting id"])
+
 
 @app.action(description="Get zoom meeting invitation", action_type="investigate", read_only=True, render_as="table")
 def get_meeting_invitation(params: GetMeetingInvitationParams, soar: SOARClient, asset: Asset) -> GetMeetingInvitationOutput:

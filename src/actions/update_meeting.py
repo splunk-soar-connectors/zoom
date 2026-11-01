@@ -15,23 +15,24 @@
 """Update Meeting action."""
 
 from soar_sdk.abstract import SOARClient
-from soar_sdk.action_results import ActionOutput
 from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
 from soar_sdk.params import Param, Params
+
 from ..app import Asset, app
-from ..helper import ZoomHelper
-from ..helper import _get_password
-from ..helper import _is_setting_selected
+from ..helper import ZoomHelper, _get_password
 from ..output_models import UpdateMeetingOutput, UpdateMeetingSummary
+
 
 logger = getLogger()
 
+
 class UpdateMeetingParams(Params):
-    meeting_id: str = Param(description='Zoom meeting ID', required=True, primary=True, cef_types=['zoom meeting id'], column_name="Meeting ID")
-    password: str | None = Param(description='Meeting password', required=False, sensitive=True, default=None)
-    gen_password: bool | None = Param(description='Auto generate meeting password', required=False, default=None)
-    waiting_room: str = Param(description='Enable waiting room', required=True, value_list=['None', 'True', 'False'], default='None')
+    meeting_id: str = Param(description="Zoom meeting ID", required=True, primary=True, cef_types=["zoom meeting id"], column_name="Meeting ID")
+    password: str | None = Param(description="Meeting password", required=False, sensitive=True, default=None)
+    gen_password: bool | None = Param(description="Auto generate meeting password", required=False, default=None)
+    waiting_room: str = Param(description="Enable waiting room", required=True, value_list=["None", "True", "False"], default="None")
+
 
 @app.action(
     description="Update zoom meeting",
@@ -40,9 +41,7 @@ class UpdateMeetingParams(Params):
     render_as="table",
     summary_type=UpdateMeetingSummary,
 )
-def update_meeting(
-    params: UpdateMeetingParams, soar: SOARClient[UpdateMeetingSummary], asset: Asset
-) -> UpdateMeetingOutput:
+def update_meeting(params: UpdateMeetingParams, soar: SOARClient[UpdateMeetingSummary], asset: Asset) -> UpdateMeetingOutput:
     logger.progress("Updating Zoom meeting")
     meeting_id_path = ZoomHelper.encode_path_segment(params.meeting_id, "meeting_id")
     password = _get_password(params.password, params.gen_password)

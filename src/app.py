@@ -58,7 +58,8 @@ app = App(
     asset_cls=Asset,
 )
 
-from . import actions  # noqa: F401, E402
+from . import actions  # noqa: F401
+
 
 if __name__ == "__main__":
     app.cli()

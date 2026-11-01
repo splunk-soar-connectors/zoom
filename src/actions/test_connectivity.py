@@ -18,19 +18,24 @@ from soar_sdk.abstract import SOARClient
 from soar_sdk.action_results import ActionOutput
 from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
-from soar_sdk.params import Param, Params
+from soar_sdk.params import Params
+
 from ..app import Asset, app
-from ..helper import ZoomHelper
 from ..consts import TEST_CONNECTIVITY_FAILED, TEST_CONNECTIVITY_SUCCESS
+from ..helper import ZoomHelper
 from ..output_models import TestConnectivityOutput
 
+
 logger = getLogger()
+
 
 class TestConnectivityParams(Params):
     pass
 
+
 class TestConnectivityOutput(ActionOutput):
     pass
+
 
 @app.test_connectivity()
 def test_connectivity(soar: SOARClient, asset: Asset) -> None:

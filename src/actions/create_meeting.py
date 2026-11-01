@@ -15,30 +15,34 @@
 """Create Meeting action."""
 
 from soar_sdk.abstract import SOARClient
-from soar_sdk.action_results import ActionOutput
 from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
 from soar_sdk.params import Param, Params
+
 from ..app import Asset, app
-from ..helper import ZoomHelper
-from ..helper import _get_password
-from ..helper import _is_setting_selected
+from ..helper import ZoomHelper, _get_password
 from ..output_models import CreateMeetingOutput, CreateMeetingSummary
+
 
 logger = getLogger()
 
+
 class CreateMeetingParams(Params):
-    user_id: str = Param(description='User id', required=True, primary=True, cef_types=['zoom user id', 'email'], default='me')
-    password: str | None = Param(description='Meeting password', required=False, sensitive=True, default=None)
-    gen_password: bool | None = Param(description='Auto generate meeting password', required=False, default=None)
-    waiting_room: str = Param(description='Enable waiting room', required=True, value_list=['None', 'True', 'False'], default='None')
-    topic: str | None = Param(description='Topic of meeting', required=False, default=None)
-    agenda: str | None = Param(description='Agenda of meeting', required=False, default=None)
-    alternative_hosts: str | None = Param(description=("Comma-separated list of the meeting's alternative hosts' email addresses or "
- 'IDs'), required=False, default=None)
-    continuous_meeting_chat: bool = Param(description='Whether to enable the continuous meeting chat setting', required=False, default=False)
-    auto_recording: str = Param(description='The automatic recording settings', required=False, value_list=['none', 'cloud', 'local'], default='none')
+    user_id: str = Param(description="User id", required=True, primary=True, cef_types=["zoom user id", "email"], default="me")
+    password: str | None = Param(description="Meeting password", required=False, sensitive=True, default=None)
+    gen_password: bool | None = Param(description="Auto generate meeting password", required=False, default=None)
+    waiting_room: str = Param(description="Enable waiting room", required=True, value_list=["None", "True", "False"], default="None")
+    topic: str | None = Param(description="Topic of meeting", required=False, default=None)
+    agenda: str | None = Param(description="Agenda of meeting", required=False, default=None)
+    alternative_hosts: str | None = Param(
+        description=("Comma-separated list of the meeting's alternative hosts' email addresses or IDs"), required=False, default=None
+    )
+    continuous_meeting_chat: bool = Param(description="Whether to enable the continuous meeting chat setting", required=False, default=False)
+    auto_recording: str = Param(
+        description="The automatic recording settings", required=False, value_list=["none", "cloud", "local"], default="none"
+    )
     meeting_invitees: str | None = Param(description="Comma-separated list of the meeting's invitees", required=False, default=None)
+
 
 @app.action(
     description="Create zoom meeting",
@@ -48,9 +52,7 @@ class CreateMeetingParams(Params):
     verbose="In user_id, use a user ID, email, or `me` for the current user. auto_recording sets the meeting recording destination.",
     summary_type=CreateMeetingSummary,
 )
-def create_meeting(
-    params: CreateMeetingParams, soar: SOARClient[CreateMeetingSummary], asset: Asset
-) -> CreateMeetingOutput:
+def create_meeting(params: CreateMeetingParams, soar: SOARClient[CreateMeetingSummary], asset: Asset) -> CreateMeetingOutput:
     logger.progress("Creating Zoom meeting")
     user_id_path = ZoomHelper.encode_path_segment(params.user_id, "user_id")
     password = _get_password(params.password, params.gen_password)
